@@ -132,7 +132,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
               </div>
 
               <div>
-                <Label htmlFor="extractionTime">Tempo de extração (seconds)</Label>
+                <Label htmlFor="extractionTime">Tempo de extração (segundos)</Label>
                 <Input
                   id="extractionTime"
                   name="extractionTime"
@@ -185,7 +185,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
               </Button>
             </Link>
             <Button type="submit" disabled={isSubmitting || coffees.length === 0}>
-              {isSubmitting ? "Saving..." : brew ? "Update Brew" : "Add Brew"}
+              {isSubmitting ? "Salvando..." : brew ? "Atualizar preparo" : "Adicionar preparo"}
             </Button>
           </div>
         </form>

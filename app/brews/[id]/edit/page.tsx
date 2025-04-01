@@ -12,7 +12,7 @@ export default async function EditBrewPage({ params }: { params: { id: string } 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Edit Brew</h1>
+      <h1 className="text-3xl font-bold mb-8">Editar preparo</h1>
       <BrewForm brew={brew} coffees={coffees} />
     </div>
   )

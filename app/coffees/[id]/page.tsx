@@ -20,7 +20,7 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
       <div className="mb-6">
         <Link href="/coffees">
           <Button variant="ghost" className="pl-0">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Coffee Library
+            <ArrowLeft className="mr-2 h-4 w-4" /> Voltar ao diário do café
           </Button>
         </Link>
       </div>
@@ -30,12 +30,12 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
         <div className="flex gap-2 mt-4 md:mt-0">
           <Link href={`/coffees/${coffee.id}/edit`}>
             <Button variant="outline">
-              <Edit className="mr-2 h-4 w-4" /> Edit Coffee
+              <Edit className="mr-2 h-4 w-4" /> Editar café
             </Button>
           </Link>
           <Link href={`/brews/new?coffeeId=${coffee.id}`}>
             <Button>
-              <CoffeeBeaker className="mr-2 h-4 w-4" /> Add Brew
+              <CoffeeBeaker className="mr-2 h-4 w-4" /> Adicionar preparo
             </Button>
           </Link>
         </div>
@@ -43,26 +43,26 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-card border rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Coffee Details</h2>
+          <h2 className="text-xl font-semibold mb-4">Detalhes do café</h2>
           <dl className="space-y-4">
             <div>
-              <dt className="text-sm font-medium text-muted-foreground">Sensory Profile</dt>
+              <dt className="text-sm font-medium text-muted-foreground">Perfil sensorial</dt>
               <dd className="mt-1">{coffee.sensoryProfile || "Not specified"}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-muted-foreground">Region</dt>
+              <dt className="text-sm font-medium text-muted-foreground">Região</dt>
               <dd className="mt-1">{coffee.region}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-muted-foreground">Producer</dt>
+              <dt className="text-sm font-medium text-muted-foreground">Produtor</dt>
               <dd className="mt-1">{coffee.producer}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-muted-foreground">Variety</dt>
+              <dt className="text-sm font-medium text-muted-foreground">Variedade</dt>
               <dd className="mt-1">{coffee.variety}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-muted-foreground">Process</dt>
+              <dt className="text-sm font-medium text-muted-foreground">Processo</dt>
               <dd className="mt-1">{coffee.process}</dd>
             </div>
             <div>
@@ -73,13 +73,13 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
         </div>
 
         <div className="bg-card border rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Brews</h2>
+          <h2 className="text-xl font-semibold mb-4">Preparos recentes</h2>
           {/* This would be populated with actual brew data */}
-          <p className="text-muted-foreground">No brews recorded yet for this coffee.</p>
+          <p className="text-muted-foreground">Sem preparos recentes para esse café.</p>
           <div className="mt-4">
             <Link href={`/brews/new?coffeeId=${coffee.id}`}>
               <Button>
-                <CoffeeBeaker className="mr-2 h-4 w-4" /> Add Brew
+                <CoffeeBeaker className="mr-2 h-4 w-4" /> Adicionar preparo
               </Button>
             </Link>
           </div>

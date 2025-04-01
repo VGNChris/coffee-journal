@@ -7,7 +7,7 @@ export default async function NewBrewPage({ searchParams }: { searchParams: { co
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Add New Brew</h1>
+      <h1 className="text-3xl font-bold mb-8">Adicionar novo preparo</h1>
       <BrewForm coffees={coffees} selectedCoffeeId={selectedCoffeeId} />
     </div>
   )

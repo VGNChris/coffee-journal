@@ -7,9 +7,9 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Coffee Journal</h1>
+          <h1 className="text-4xl font-bold mb-4">Diário do café</h1>
           <p className="text-lg text-muted-foreground">
-            Track your coffee brewing experiences and discover your perfect cup
+          Anote, ajuste, repita! Transforme cada café em uma experiência personalizada e descubra a combinação que faz seu coração (e seu paladar) vibrar. 🔥
           </p>
         </div>
 
@@ -19,9 +19,9 @@ export default function Home() {
             className="bg-card hover:bg-card/90 transition-colors border rounded-lg p-6 flex flex-col items-center text-center"
           >
             <Coffee size={48} className="mb-4 text-primary" />
-            <h2 className="text-2xl font-semibold mb-2">Coffee Library</h2>
+            <h2 className="text-2xl font-semibold mb-2">Meus cafés</h2>
             <p className="text-muted-foreground">
-              Manage your coffee collection with details on origin, process, and flavor profiles
+            Viaje pelas origens, processos e aromas do seu café. Organize sua coleção como um curador de experiências, onde cada grão revela um capítulo de sabor e tradição.
             </p>
           </Link>
 
@@ -30,19 +30,19 @@ export default function Home() {
             className="bg-card hover:bg-card/90 transition-colors border rounded-lg p-6 flex flex-col items-center text-center"
           >
             <CoffeeBeaker size={48} className="mb-4 text-primary" />
-            <h2 className="text-2xl font-semibold mb-2">Brewing Journal</h2>
+            <h2 className="text-2xl font-semibold mb-2">Diário do barista</h2>
             <p className="text-muted-foreground">
-              Record brewing methods, parameters, and tasting notes for each coffee experience
+            Seu Banco de Dados Sensorial: armazene métodos, métricas e impressões de cada extração. Compare, analise e eleve sua expertise de home barista.🔍📊 
             </p>
           </Link>
         </div>
 
         <div className="text-center">
-          <p className="text-muted-foreground mb-4">First time setup? Initialize your database:</p>
+          <p className="text-muted-foreground mb-4">Primeiro uso? Inicialize o banco de dados:</p>
           <Link href="/api/setup">
             <Button variant="outline">
               <Database className="mr-2 h-4 w-4" />
-              Setup Database
+              Configure o banco de dados
             </Button>
           </Link>
         </div>

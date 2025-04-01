@@ -65,10 +65,10 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="coffeeId">Coffee</Label>
+              <Label htmlFor="coffeeId">Café</Label>
               <Select value={coffeeId} onValueChange={setCoffeeId} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a coffee" />
+                  <SelectValue placeholder="Selecione o café" />
                 </SelectTrigger>
                 <SelectContent>
                   {coffees.map((coffee) => (
@@ -80,33 +80,33 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
               </Select>
               {coffees.length === 0 && (
                 <p className="text-sm text-muted-foreground mt-2">
-                  No coffees available.{" "}
+                  Nenhum café disponível.{" "}
                   <Link href="/coffees/new" className="text-primary">
-                    Add a coffee
+                    Adicione um café
                   </Link>{" "}
-                  first.
+                  primeiro.
                 </p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="brewingMethod">Brewing Method</Label>
+              <Label htmlFor="brewingMethod">Método de extração</Label>
               <Select name="brewingMethod" defaultValue={brew?.brewingMethod || "V60"} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select brewing method" />
+                  <SelectValue placeholder="Selecione o método de extração" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="V60">V60</SelectItem>
-                  <SelectItem value="French Press">French Press</SelectItem>
+                  <SelectItem value="French Press">Prensa Francesa</SelectItem>
                   <SelectItem value="Espresso">Espresso</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="Other">Outro</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="waterTemperature">Water Temperature (°C)</Label>
+                <Label htmlFor="waterTemperature">Temperatura da água (°C)</Label>
                 <Input
                   id="waterTemperature"
                   name="waterTemperature"
@@ -119,7 +119,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
               </div>
 
               <div>
-                <Label htmlFor="grinderSetting">Grinder Setting</Label>
+                <Label htmlFor="grinderSetting">Click do moedor</Label>
                 <Input
                   id="grinderSetting"
                   name="grinderSetting"
@@ -132,13 +132,13 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
               </div>
 
               <div>
-                <Label htmlFor="extractionTime">Extraction Time (seconds)</Label>
+                <Label htmlFor="extractionTime">Tempo de extração (seconds)</Label>
                 <Input
                   id="extractionTime"
                   name="extractionTime"
                   type="number"
                   min="10"
-                  max="300"
+                  max="600"
                   defaultValue={brew?.extractionTime || 120}
                   required
                 />
@@ -148,7 +148,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
             <div className="space-y-6 pt-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label>Acidity (1-5)</Label>
+                  <Label>Acidez (1-5)</Label>
                   <span className="text-muted-foreground">{acidity}</span>
                 </div>
                 <Slider value={[acidity]} min={1} max={5} step={1} onValueChange={(value) => setAcidity(value[0])} />
@@ -156,7 +156,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label>Sweetness (1-5)</Label>
+                  <Label>Doçura (1-5)</Label>
                   <span className="text-muted-foreground">{sweetness}</span>
                 </div>
                 <Slider
@@ -170,7 +170,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <Label>Body (1-5)</Label>
+                  <Label>Corpo (1-5)</Label>
                   <span className="text-muted-foreground">{body}</span>
                 </div>
                 <Slider value={[body]} min={1} max={5} step={1} onValueChange={(value) => setBody(value[0])} />
@@ -181,7 +181,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
           <div className="flex justify-end space-x-4">
             <Link href="/brews">
               <Button type="button" variant="outline">
-                Cancel
+                Cancelar
               </Button>
             </Link>
             <Button type="submit" disabled={isSubmitting || coffees.length === 0}>

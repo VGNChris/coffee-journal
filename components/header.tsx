@@ -12,10 +12,10 @@ export function Header() {
         </Link>
         <nav className="flex items-center space-x-4">
           <Link href="/coffees">
-            <Button variant="ghost">Coffees</Button>
+            <Button variant="ghost">Diário de café</Button>
           </Link>
           <Link href="/brews">
-            <Button variant="ghost">Brews</Button>
+            <Button variant="ghost">Preparos</Button>
           </Link>
         </nav>
       </div>

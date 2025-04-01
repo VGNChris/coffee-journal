@@ -8,9 +8,9 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Coffee Journal",
-  description: "Track your coffee brewing experiences",
-    generator: 'v0.dev'
+  title: "Diário de Café",
+  description: "Anote, ajuste, repita! Transforme cada café em uma experiência personalizada e descubra a combinação que faz seu coração (e seu paladar) vibrar. 🔥",
+    generator: 'Chris Oliveira'
 }
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="ptbr">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <div className="min-h-screen flex flex-col">

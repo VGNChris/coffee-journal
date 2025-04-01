@@ -159,7 +159,7 @@ export function CoffeeForm({ coffee }: CoffeeFormProps) {
           </div>
 
           <div className="flex justify-end space-x-4">
-            <Link href="/coffees">
+            <Link href="/coffees">  
               <Button type="button" variant="outline">
                 Cancelar
               </Button>

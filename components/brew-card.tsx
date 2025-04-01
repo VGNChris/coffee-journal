@@ -23,15 +23,15 @@ export function BrewCard({ brew }: BrewCardProps) {
           <div className="flex space-x-1">
             <div className="text-center px-2">
               <div className="text-lg font-bold">{brew.acidity}</div>
-              <div className="text-xs text-muted-foreground">Acidity</div>
+              <div className="text-xs text-muted-foreground">Acidez</div>
             </div>
             <div className="text-center px-2">
               <div className="text-lg font-bold">{brew.sweetness}</div>
-              <div className="text-xs text-muted-foreground">Sweetness</div>
+              <div className="text-xs text-muted-foreground">Doçura</div>
             </div>
             <div className="text-center px-2">
               <div className="text-lg font-bold">{brew.body}</div>
-              <div className="text-xs text-muted-foreground">Body</div>
+              <div className="text-xs text-muted-foreground">Corpo</div>
             </div>
           </div>
         </div>
@@ -39,19 +39,19 @@ export function BrewCard({ brew }: BrewCardProps) {
       <CardContent>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
           <div>
-            <span className="text-sm font-medium">Water Temp:</span>
+            <span className="text-sm font-medium">Temperatura da água (ºc):</span>
             <span className="text-sm text-muted-foreground ml-1">{brew.waterTemperature}°C</span>
           </div>
           <div>
-            <span className="text-sm font-medium">Grinder:</span>
+            <span className="text-sm font-medium">Click do moedor:</span>
             <span className="text-sm text-muted-foreground ml-1">{brew.grinderSetting}</span>
           </div>
           <div>
-            <span className="text-sm font-medium">Time:</span>
+            <span className="text-sm font-medium">Tempo total de extração:</span>
             <span className="text-sm text-muted-foreground ml-1">{brew.extractionTime}s</span>
           </div>
           <div>
-            <span className="text-sm font-medium">Process:</span>
+            <span className="text-sm font-medium">Processo:</span>
             <span className="text-sm text-muted-foreground ml-1">{brew.coffee.process}</span>
           </div>
         </div>
@@ -59,13 +59,13 @@ export function BrewCard({ brew }: BrewCardProps) {
       <CardFooter className="flex justify-between">
         <Link href={`/brews/${brew.id}`}>
           <Button variant="outline" size="sm">
-            View Details
+            Ver detalhes
           </Button>
         </Link>
         <Link href={`/coffees/${brew.coffee.id}`}>
           <Button variant="secondary" size="sm">
             <Coffee className="mr-2 h-4 w-4" />
-            View Coffee
+            Ver café
           </Button>
         </Link>
       </CardFooter>

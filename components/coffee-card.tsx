@@ -21,15 +21,15 @@ export function CoffeeCard({ coffee }: CoffeeCardProps) {
       <CardContent>
         <div className="space-y-2">
           <div>
-            <span className="text-sm font-medium">Sensory Profile:</span>
+            <span className="text-sm font-medium">Perfil sensorial:</span>
             <p className="text-sm text-muted-foreground line-clamp-2">{coffee.sensoryProfile || "Not specified"}</p>
           </div>
           <div>
-            <span className="text-sm font-medium">Process:</span>
+            <span className="text-sm font-medium">Processo:</span>
             <p className="text-sm text-muted-foreground">{coffee.process}</p>
           </div>
           <div>
-            <span className="text-sm font-medium">Variety:</span>
+            <span className="text-sm font-medium">Variedade:</span>
             <p className="text-sm text-muted-foreground">{coffee.variety}</p>
           </div>
         </div>
@@ -37,13 +37,13 @@ export function CoffeeCard({ coffee }: CoffeeCardProps) {
       <CardFooter className="flex justify-between">
         <Link href={`/coffees/${coffee.id}`}>
           <Button variant="outline" size="sm">
-            View Details
+            Ver detalhes
           </Button>
         </Link>
         <Link href={`/brews/new?coffeeId=${coffee.id}`}>
           <Button size="sm">
             <CoffeeBeaker className="mr-2 h-4 w-4" />
-            Add Brew
+            Adicionar preparo
           </Button>
         </Link>
       </CardFooter>

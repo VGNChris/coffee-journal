@@ -1,0 +1,166 @@
+"use server"
+
+import { sql } from "@/lib/db"
+import { revalidatePath } from "next/cache"
+
+export async function createCoffee(data: {
+  name: string
+  sensoryProfile: string
+  region: string
+  producer: string
+  variety: string
+  process: string
+  altitude: string
+}) {
+  try {
+    await sql`
+      INSERT INTO coffees (
+        name, 
+        sensory_profile, 
+        region, 
+        producer, 
+        variety, 
+        process, 
+        altitude, 
+        created_at, 
+        updated_at
+      ) 
+      VALUES (
+        ${data.name}, 
+        ${data.sensoryProfile}, 
+        ${data.region}, 
+        ${data.producer}, 
+        ${data.variety}, 
+        ${data.process}, 
+        ${data.altitude}, 
+        NOW(), 
+        NOW()
+      )
+    `
+
+    revalidatePath("/coffees")
+  } catch (error) {
+    console.error("Database Error:", error)
+    throw new Error("Failed to create coffee.")
+  }
+}
+
+export async function updateCoffee(
+  id: number,
+  data: {
+    name: string
+    sensoryProfile: string
+    region: string
+    producer: string
+    variety: string
+    process: string
+    altitude: string
+  },
+) {
+  try {
+    await sql`
+      UPDATE coffees
+      SET 
+        name = ${data.name}, 
+        sensory_profile = ${data.sensoryProfile}, 
+        region = ${data.region}, 
+        producer = ${data.producer}, 
+        variety = ${data.variety}, 
+        process = ${data.process}, 
+        altitude = ${data.altitude}, 
+        updated_at = NOW()
+      WHERE id = ${id}
+    `
+
+    revalidatePath("/coffees")
+    revalidatePath(`/coffees/${id}`)
+  } catch (error) {
+    console.error("Database Error:", error)
+    throw new Error("Failed to update coffee.")
+  }
+}
+
+export async function createBrew(data: {
+  coffeeId: number
+  brewingMethod: string
+  waterTemperature: number
+  grinderSetting: number
+  extractionTime: number
+  acidity: number
+  sweetness: number
+  body: number
+}) {
+  try {
+    await sql`
+      INSERT INTO brews (
+        coffee_id, 
+        brewing_method, 
+        water_temperature, 
+        grinder_setting, 
+        extraction_time, 
+        acidity, 
+        sweetness, 
+        body, 
+        created_at, 
+        updated_at
+      ) 
+      VALUES (
+        ${data.coffeeId}, 
+        ${data.brewingMethod}, 
+        ${data.waterTemperature}, 
+        ${data.grinderSetting}, 
+        ${data.extractionTime}, 
+        ${data.acidity}, 
+        ${data.sweetness}, 
+        ${data.body}, 
+        NOW(), 
+        NOW()
+      )
+    `
+
+    revalidatePath("/brews")
+    revalidatePath(`/coffees/${data.coffeeId}`)
+  } catch (error) {
+    console.error("Database Error:", error)
+    throw new Error("Failed to create brew.")
+  }
+}
+
+export async function updateBrew(
+  id: number,
+  data: {
+    coffeeId: number
+    brewingMethod: string
+    waterTemperature: number
+    grinderSetting: number
+    extractionTime: number
+    acidity: number
+    sweetness: number
+    body: number
+  },
+) {
+  try {
+    await sql`
+      UPDATE brews
+      SET 
+        coffee_id = ${data.coffeeId}, 
+        brewing_method = ${data.brewingMethod}, 
+        water_temperature = ${data.waterTemperature}, 
+        grinder_setting = ${data.grinderSetting}, 
+        extraction_time = ${data.extractionTime}, 
+        acidity = ${data.acidity}, 
+        sweetness = ${data.sweetness}, 
+        body = ${data.body}, 
+        updated_at = NOW()
+      WHERE id = ${id}
+    `
+
+    revalidatePath("/brews")
+    revalidatePath(`/brews/${id}`)
+    revalidatePath(`/coffees/${data.coffeeId}`)
+  } catch (error) {
+    console.error("Database Error:", error)
+    throw new Error("Failed to update brew.")
+  }
+}
+

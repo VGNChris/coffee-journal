@@ -7,11 +7,23 @@ export async function getCoffees(): Promise<Coffee[]> {
       console.error("DATABASE_URL environment variable is not set")
       return []
     }
-    const coffees = await sql`
-      SELECT * FROM coffees
+    const result = await sql`
+      SELECT 
+        id, 
+        name, 
+        sensory_profile as "sensoryProfile", 
+        region, 
+        producer, 
+        variety, 
+        process, 
+        altitude, 
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
+      FROM coffees
       ORDER BY created_at DESC
     `
-    return coffees
+    console.log("Cafés recuperados:", result)
+    return result
   } catch (error) {
     console.error("Database Error:", error)
     return []
@@ -21,9 +33,21 @@ export async function getCoffees(): Promise<Coffee[]> {
 export async function getCoffeeById(id: number): Promise<Coffee | null> {
   try {
     const coffees = await sql`
-      SELECT * FROM coffees
+      SELECT 
+        id, 
+        name, 
+        sensory_profile as "sensoryProfile", 
+        region, 
+        producer, 
+        variety, 
+        process, 
+        altitude, 
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
+      FROM coffees
       WHERE id = ${id}
     `
+
     if (coffees.length > 0) {
       console.log("Café recuperado do banco de dados:", coffees[0])
     }
@@ -55,7 +79,9 @@ export async function getBrews(): Promise<Brew[]> {
         c.producer as "coffee.producer", 
         c.variety as "coffee.variety", 
         c.process as "coffee.process", 
-        c.altitude as "coffee.altitude"
+        c.altitude as "coffee.altitude",
+        c.created_at as "coffee.createdAt",
+        c.updated_at as "coffee.updatedAt"
       FROM brews b
       JOIN coffees c ON b.coffee_id = c.id
       ORDER BY b.created_at DESC
@@ -72,8 +98,8 @@ export async function getBrews(): Promise<Brew[]> {
         variety: brew["coffee.variety"],
         process: brew["coffee.process"],
         altitude: brew["coffee.altitude"],
-        createdAt: brew.createdAt,
-        updatedAt: brew.updatedAt,
+        createdAt: brew["coffee.createdAt"],
+        updatedAt: brew["coffee.updatedAt"],
       },
     }))
   } catch (error) {
@@ -103,7 +129,9 @@ export async function getBrewById(id: number): Promise<Brew | null> {
         c.producer as "coffee.producer", 
         c.variety as "coffee.variety", 
         c.process as "coffee.process", 
-        c.altitude as "coffee.altitude"
+        c.altitude as "coffee.altitude",
+        c.created_at as "coffee.createdAt",
+        c.updated_at as "coffee.updatedAt"
       FROM brews b
       JOIN coffees c ON b.coffee_id = c.id
       WHERE b.id = ${id}
@@ -125,8 +153,8 @@ export async function getBrewById(id: number): Promise<Brew | null> {
         variety: brew["coffee.variety"],
         process: brew["coffee.process"],
         altitude: brew["coffee.altitude"],
-        createdAt: brew.createdAt,
-        updatedAt: brew.updatedAt,
+        createdAt: brew["coffee.createdAt"],
+        updatedAt: brew["coffee.updatedAt"],
       },
     }
   } catch (error) {

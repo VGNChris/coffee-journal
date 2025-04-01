@@ -22,7 +22,7 @@ export function CoffeeCard({ coffee }: CoffeeCardProps) {
         <div className="space-y-2">
           <div>
             <span className="text-sm font-medium">Sensory Profile:</span>
-            <p className="text-sm text-muted-foreground line-clamp-1">{coffee.sensoryProfile}</p>
+            <p className="text-sm text-muted-foreground line-clamp-2">{coffee.sensoryProfile || "Not specified"}</p>
           </div>
           <div>
             <span className="text-sm font-medium">Process:</span>

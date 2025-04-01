@@ -11,6 +11,10 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
     notFound()
   }
 
+  // Log para depuração
+  console.log("Exibindo café:", coffee)
+  console.log("Perfil sensorial:", coffee.sensoryProfile)
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
@@ -43,7 +47,7 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
           <dl className="space-y-4">
             <div>
               <dt className="text-sm font-medium text-muted-foreground">Sensory Profile</dt>
-              <dd className="mt-1">{coffee.sensoryProfile}</dd>
+              <dd className="mt-1">{coffee.sensoryProfile || "Not specified"}</dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-muted-foreground">Region</dt>

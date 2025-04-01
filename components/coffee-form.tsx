@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { createCoffee, updateCoffee } from "@/lib/actions"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
+import { toast } from "@/components/ui/use-toast"
 
 interface CoffeeFormProps {
   coffee?: Coffee
@@ -20,32 +21,51 @@ interface CoffeeFormProps {
 export function CoffeeForm({ coffee }: CoffeeFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    name: coffee?.name || "",
+    sensoryProfile: coffee?.sensoryProfile || "",
+    region: coffee?.region || "",
+    producer: coffee?.producer || "",
+    variety: coffee?.variety || "",
+    process: coffee?.process || "",
+    altitude: coffee?.altitude || "",
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    const formData = new FormData(e.currentTarget)
-    const coffeeData = {
-      name: formData.get("name") as string,
-      sensoryProfile: formData.get("sensoryProfile") as string,
-      region: formData.get("region") as string,
-      producer: formData.get("producer") as string,
-      variety: formData.get("variety") as string,
-      process: formData.get("process") as string,
-      altitude: formData.get("altitude") as string,
-    }
-
     try {
+      console.log("Enviando dados do café:", formData)
+
       if (coffee) {
-        await updateCoffee(coffee.id, coffeeData)
+        await updateCoffee(coffee.id, formData)
+        toast({
+          title: "Café atualizado",
+          description: "O café foi atualizado com sucesso.",
+        })
       } else {
-        await createCoffee(coffeeData)
+        await createCoffee(formData)
+        toast({
+          title: "Café adicionado",
+          description: "O café foi adicionado com sucesso.",
+        })
       }
+
       router.push("/coffees")
       router.refresh()
     } catch (error) {
-      console.error("Error saving coffee:", error)
+      console.error("Erro ao salvar café:", error)
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao salvar o café. Tente novamente.",
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -57,40 +77,43 @@ export function CoffeeForm({ coffee }: CoffeeFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Coffee Name</Label>
-              <Input id="name" name="name" defaultValue={coffee?.name || ""} required />
+              <Label htmlFor="name">Nome do Café</Label>
+              <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
             </div>
 
             <div>
-              <Label htmlFor="sensoryProfile">Sensory Profile</Label>
+              <Label htmlFor="sensoryProfile">Perfil Sensorial</Label>
               <Textarea
                 id="sensoryProfile"
                 name="sensoryProfile"
-                placeholder="Describe the flavor notes (e.g., Citrus, Chocolate, Floral)"
-                defaultValue={coffee?.sensoryProfile || ""}
+                placeholder="Descreva as notas de sabor (ex: Cítrico, Chocolate, Floral)"
+                value={formData.sensoryProfile}
+                onChange={handleChange}
                 required
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="region">Region</Label>
+                <Label htmlFor="region">Região</Label>
                 <Input
                   id="region"
                   name="region"
-                  placeholder="Country or specific region"
-                  defaultValue={coffee?.region || ""}
+                  placeholder="País ou região específica"
+                  value={formData.region}
+                  onChange={handleChange}
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="producer">Producer</Label>
+                <Label htmlFor="producer">Produtor</Label>
                 <Input
                   id="producer"
                   name="producer"
-                  placeholder="Farm or cooperative name"
-                  defaultValue={coffee?.producer || ""}
+                  placeholder="Nome da fazenda ou cooperativa"
+                  value={formData.producer}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -98,23 +121,25 @@ export function CoffeeForm({ coffee }: CoffeeFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="variety">Variety</Label>
+                <Label htmlFor="variety">Variedade</Label>
                 <Input
                   id="variety"
                   name="variety"
-                  placeholder="E.g., Bourbon, Typica, Gesha"
-                  defaultValue={coffee?.variety || ""}
+                  placeholder="Ex: Bourbon, Typica, Gesha"
+                  value={formData.variety}
+                  onChange={handleChange}
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="process">Process</Label>
+                <Label htmlFor="process">Processo</Label>
                 <Input
                   id="process"
                   name="process"
-                  placeholder="E.g., Washed, Natural, Honey"
-                  defaultValue={coffee?.process || ""}
+                  placeholder="Ex: Lavado, Natural, Honey"
+                  value={formData.process}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -125,8 +150,9 @@ export function CoffeeForm({ coffee }: CoffeeFormProps) {
               <Input
                 id="altitude"
                 name="altitude"
-                placeholder="E.g., 1200-1500m"
-                defaultValue={coffee?.altitude || ""}
+                placeholder="Ex: 1200-1500m"
+                value={formData.altitude}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -135,11 +161,11 @@ export function CoffeeForm({ coffee }: CoffeeFormProps) {
           <div className="flex justify-end space-x-4">
             <Link href="/coffees">
               <Button type="button" variant="outline">
-                Cancel
+                Cancelar
               </Button>
             </Link>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : coffee ? "Update Coffee" : "Add Coffee"}
+              {isSubmitting ? "Salvando..." : coffee ? "Atualizar Café" : "Adicionar Café"}
             </Button>
           </div>
         </form>

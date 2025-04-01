@@ -13,7 +13,23 @@ export async function createCoffee(data: {
   altitude: string
 }) {
   try {
-    await sql`
+    console.log("Criando café com dados:", data)
+    console.log("Perfil sensorial:", data.sensoryProfile)
+
+    // Verificar se todos os campos estão presentes
+    if (
+      !data.name ||
+      !data.sensoryProfile ||
+      !data.region ||
+      !data.producer ||
+      !data.variety ||
+      !data.process ||
+      !data.altitude
+    ) {
+      throw new Error("Todos os campos são obrigatórios")
+    }
+
+    const result = await sql`
       INSERT INTO coffees (
         name, 
         sensory_profile, 
@@ -36,12 +52,16 @@ export async function createCoffee(data: {
         NOW(), 
         NOW()
       )
+      RETURNING id, name, sensory_profile as "sensoryProfile"
     `
 
+    console.log("Café criado com sucesso:", result)
+
     revalidatePath("/coffees")
+    return { success: true, data: result[0] }
   } catch (error) {
-    console.error("Database Error:", error)
-    throw new Error("Failed to create coffee.")
+    console.error("Erro ao criar café:", error)
+    throw new Error(`Falha ao criar café: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 
@@ -58,7 +78,9 @@ export async function updateCoffee(
   },
 ) {
   try {
-    await sql`
+    console.log("Atualizando café com ID:", id, "Dados:", data)
+
+    const result = await sql`
       UPDATE coffees
       SET 
         name = ${data.name}, 
@@ -70,13 +92,17 @@ export async function updateCoffee(
         altitude = ${data.altitude}, 
         updated_at = NOW()
       WHERE id = ${id}
+      RETURNING id, name, sensory_profile as "sensoryProfile"
     `
+
+    console.log("Café atualizado com sucesso:", result)
 
     revalidatePath("/coffees")
     revalidatePath(`/coffees/${id}`)
+    return { success: true, data: result[0] }
   } catch (error) {
-    console.error("Database Error:", error)
-    throw new Error("Failed to update coffee.")
+    console.error("Erro ao atualizar café:", error)
+    throw new Error(`Falha ao atualizar café: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 

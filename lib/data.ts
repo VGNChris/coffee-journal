@@ -24,6 +24,9 @@ export async function getCoffeeById(id: number): Promise<Coffee | null> {
       SELECT * FROM coffees
       WHERE id = ${id}
     `
+    if (coffees.length > 0) {
+      console.log("Café recuperado do banco de dados:", coffees[0])
+    }
     return coffees.length > 0 ? coffees[0] : null
   } catch (error) {
     console.error("Database Error:", error)

@@ -13,73 +13,83 @@ export async function GET() {
       )
     }
 
-    // Verificar se a tabela brews existe e sua estrutura
+    // Verificar se as tabelas existem
+    const tablesExist = await sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'coffees'
+      ) as has_coffees,
+      EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'brews'
+      ) as has_brews;
+    `
+
+    const { has_coffees, has_brews } = tablesExist[0]
+
+    if (!has_coffees) {
+      // Create coffees table if not exists
+      await sql`
+        CREATE TABLE coffees (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          sensory_profile TEXT NOT NULL,
+          region TEXT NOT NULL,
+          producer TEXT NOT NULL,
+          variety TEXT NOT NULL,
+          process TEXT NOT NULL,
+          altitude TEXT NOT NULL,
+          rating DECIMAL(2,1) DEFAULT 0,
+          created_at TIMESTAMP NOT NULL,
+          updated_at TIMESTAMP NOT NULL
+        )
+      `
+      console.log("Tabela coffees criada com sucesso")
+    }
+
+    if (!has_brews) {
+      // Create brews table if not exists
+      await sql`
+        CREATE TABLE brews (
+          id SERIAL PRIMARY KEY,
+          coffee_id INTEGER NOT NULL REFERENCES coffees(id),
+          brewing_method TEXT NOT NULL,
+          dose DECIMAL(5,2) NOT NULL,
+          water_amount INTEGER NOT NULL,
+          ratio TEXT NOT NULL,
+          water_temperature INTEGER NOT NULL,
+          grinder_setting INTEGER NOT NULL,
+          extraction_time INTEGER NOT NULL,
+          acidity INTEGER NOT NULL,
+          sweetness INTEGER NOT NULL,
+          body INTEGER NOT NULL,
+          rating DECIMAL(2,1) DEFAULT 0,
+          brew_date DATE NOT NULL DEFAULT CURRENT_DATE,
+          brew_time TIME NOT NULL DEFAULT CURRENT_TIME,
+          notes TEXT,
+          created_at TIMESTAMP NOT NULL,
+          updated_at TIMESTAMP NOT NULL
+        )
+      `
+      console.log("Tabela brews criada com sucesso")
+    }
+
+    // Verificar a estrutura das tabelas
     const tableInfo = await sql`
-      SELECT column_name, data_type 
+      SELECT table_name, column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_name = 'brews';
+      WHERE table_name IN ('coffees', 'brews')
+      ORDER BY table_name, ordinal_position;
     `
-
-    console.log("Estrutura atual da tabela brews:", tableInfo)
-
-    // Drop brews table if exists
-    await sql`DROP TABLE IF EXISTS brews CASCADE`
-
-    // Create coffees table if not exists
-    await sql`
-      CREATE TABLE IF NOT EXISTS coffees (
-        id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
-        sensory_profile TEXT NOT NULL,
-        region TEXT NOT NULL,
-        producer TEXT NOT NULL,
-        variety TEXT NOT NULL,
-        process TEXT NOT NULL,
-        altitude TEXT NOT NULL,
-        rating DECIMAL(2,1) DEFAULT 0,
-        created_at TIMESTAMP NOT NULL,
-        updated_at TIMESTAMP NOT NULL
-      )
-    `
-
-    // Create brews table
-    await sql`
-      CREATE TABLE brews (
-        id SERIAL PRIMARY KEY,
-        coffee_id INTEGER NOT NULL REFERENCES coffees(id),
-        brewing_method TEXT NOT NULL,
-        dose DECIMAL(5,2) NOT NULL,
-        water_amount INTEGER NOT NULL,
-        ratio TEXT NOT NULL,
-        water_temperature INTEGER NOT NULL,
-        grinder_setting INTEGER NOT NULL,
-        extraction_time INTEGER NOT NULL,
-        acidity INTEGER NOT NULL,
-        sweetness INTEGER NOT NULL,
-        body INTEGER NOT NULL,
-        rating DECIMAL(2,1) DEFAULT 0,
-        brew_date DATE NOT NULL DEFAULT CURRENT_DATE,
-        brew_time TIME NOT NULL DEFAULT CURRENT_TIME,
-        notes TEXT,
-        created_at TIMESTAMP NOT NULL,
-        updated_at TIMESTAMP NOT NULL
-      )
-    `
-
-    // Verificar a estrutura da tabela após a criação
-    const newTableInfo = await sql`
-      SELECT column_name, data_type 
-      FROM information_schema.columns 
-      WHERE table_name = 'brews';
-    `
-
-    console.log("Nova estrutura da tabela brews:", newTableInfo)
 
     return NextResponse.json({
       success: true,
-      message: "Database setup completed successfully",
-      oldStructure: tableInfo,
-      newStructure: newTableInfo
+      message: "Database check completed successfully",
+      tablesCreated: {
+        coffees: !has_coffees,
+        brews: !has_brews
+      },
+      structure: tableInfo
     })
   } catch (error) {
     console.error("Database setup error:", error)

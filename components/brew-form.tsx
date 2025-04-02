@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import type { Brew, Coffee } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -48,9 +47,6 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [coffeeId, setCoffeeId] = useState<string>((brew?.coffeeId || selectedCoffeeId || "").toString())
-  const [acidity, setAcidity] = useState<number>(brew?.acidity || 3)
-  const [sweetness, setSweetness] = useState<number>(brew?.sweetness || 3)
-  const [body, setBody] = useState<number>(brew?.body || 3)
 
   const {
     register,
@@ -77,6 +73,15 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
   })
 
   const rating = watch("rating")
+  const acidity = watch("acidity")
+  const sweetness = watch("sweetness")
+  const body = watch("body")
+
+  useEffect(() => {
+    if (coffeeId) {
+      setValue("coffeeId", Number.parseInt(coffeeId))
+    }
+  }, [coffeeId, setValue])
 
   const onSubmit = async (data: BrewFormData) => {
     try {
@@ -87,9 +92,17 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
 
       if (result.success) {
         onSuccess?.(result.data)
-        router.push("/brews")
-        router.refresh()
         toast(brew ? "Preparo atualizado com sucesso!" : "Preparo criado com sucesso!")
+        
+        // Retorna para a página anterior ou para a página do café
+        if (selectedCoffeeId) {
+          router.push(`/coffees/${selectedCoffeeId}`)
+        } else if (brew?.coffeeId) {
+          router.push(`/coffees/${brew.coffeeId}`)
+        } else {
+          router.push("/brews")
+        }
+        router.refresh()
       }
     } catch (error) {
       console.error("Erro ao salvar preparo:", error)
@@ -158,6 +171,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                 <Label htmlFor="waterTemperature">Temperatura da água (°C)</Label>
                 <Input
                   id="waterTemperature"
+                  type="number"
                   {...register("waterTemperature", { valueAsNumber: true })}
                   min="70"
                   max="100"
@@ -174,6 +188,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                 <Label htmlFor="grinderSetting">Click do moedor</Label>
                 <Input
                   id="grinderSetting"
+                  type="number"
                   {...register("grinderSetting", { valueAsNumber: true })}
                   min="1"
                   max="40"
@@ -190,6 +205,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                 <Label htmlFor="extractionTime">Tempo de extração (segundos)</Label>
                 <Input
                   id="extractionTime"
+                  type="number"
                   {...register("extractionTime", { valueAsNumber: true })}
                   min="10"
                   max="600"
@@ -214,7 +230,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   min={0}
                   max={10}
                   step={1}
-                  onValueChange={(value) => setAcidity(value[0])}
+                  onValueChange={(value) => setValue("acidity", value[0])}
                 />
                 {errors.acidity && (
                   <p className="text-sm text-red-500 mt-1">{errors.acidity.message}</p>
@@ -231,7 +247,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   min={0}
                   max={10}
                   step={1}
-                  onValueChange={(value) => setSweetness(value[0])}
+                  onValueChange={(value) => setValue("sweetness", value[0])}
                 />
                 {errors.sweetness && (
                   <p className="text-sm text-red-500 mt-1">
@@ -250,7 +266,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   min={0}
                   max={10}
                   step={1}
-                  onValueChange={(value) => setBody(value[0])}
+                  onValueChange={(value) => setValue("body", value[0])}
                 />
                 {errors.body && (
                   <p className="text-sm text-red-500 mt-1">{errors.body.message}</p>
@@ -308,7 +324,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
           </div>
 
           <div className="flex justify-end space-x-4">
-            <Link href="/brews">
+            <Link href={selectedCoffeeId ? `/coffees/${selectedCoffeeId}` : "/brews"}>
               <Button type="button" variant="outline">
                 Cancelar
               </Button>

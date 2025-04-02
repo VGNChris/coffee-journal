@@ -43,6 +43,9 @@ export async function GET() {
         sweetness INTEGER NOT NULL,
         body INTEGER NOT NULL,
         rating DECIMAL(2,1) DEFAULT 0,
+        brew_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        brew_time TIME NOT NULL DEFAULT CURRENT_TIME,
+        notes TEXT,
         created_at TIMESTAMP NOT NULL,
         updated_at TIMESTAMP NOT NULL
       )

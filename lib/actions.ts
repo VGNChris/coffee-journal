@@ -122,6 +122,8 @@ export async function createBrew(data: {
   sweetness: number
   body: number
   rating: number
+  brewDate: string
+  brewTime: string
   notes?: string
 }): Promise<{ success: boolean; data: Brew }> {
   try {
@@ -136,6 +138,8 @@ export async function createBrew(data: {
         sweetness, 
         body,
         rating,
+        brew_date,
+        brew_time,
         notes,
         created_at, 
         updated_at
@@ -150,11 +154,13 @@ export async function createBrew(data: {
         ${data.sweetness}, 
         ${data.body},
         ${data.rating},
+        ${data.brewDate},
+        ${data.brewTime},
         ${data.notes},
         NOW(), 
         NOW()
       )
-      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, notes, created_at as "createdAt", updated_at as "updatedAt"
+      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, brew_date as "brewDate", brew_time as "brewTime", notes, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     revalidatePath("/brews")
@@ -178,6 +184,8 @@ export async function updateBrew(
     sweetness: number
     body: number
     rating: number
+    brewDate: string
+    brewTime: string
     notes?: string
   },
 ): Promise<{ success: boolean; data: Brew }> {
@@ -194,10 +202,12 @@ export async function updateBrew(
         sweetness = ${data.sweetness}, 
         body = ${data.body},
         rating = ${data.rating},
+        brew_date = ${data.brewDate},
+        brew_time = ${data.brewTime},
         notes = ${data.notes},
         updated_at = NOW()
       WHERE id = ${id}
-      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, notes, created_at as "createdAt", updated_at as "updatedAt"
+      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, brew_date as "brewDate", brew_time as "brewTime", notes, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     revalidatePath("/brews")

@@ -23,8 +23,11 @@ export interface Brew {
   sweetness: number
   body: number
   rating: number
+  brewDate: string
+  brewTime: string
   notes?: string
   createdAt: string
   updatedAt: string
+  coffee?: Coffee
 }
 

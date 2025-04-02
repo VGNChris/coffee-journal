@@ -30,6 +30,8 @@ const brewSchema = z.object({
   sweetness: z.number().min(0).max(10),
   body: z.number().min(0).max(10),
   rating: z.number().min(0).max(5),
+  brewDate: z.string().min(1, "Data do preparo é obrigatória"),
+  brewTime: z.string().min(1, "Hora do preparo é obrigatória"),
   notes: z.string().optional(),
 })
 
@@ -68,6 +70,8 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
       sweetness: brew?.sweetness || 3,
       body: brew?.body || 3,
       rating: brew?.rating || 0,
+      brewDate: brew?.brewDate || new Date().toISOString().split('T')[0],
+      brewTime: brew?.brewTime || new Date().toTimeString().slice(0, 5),
       notes: brew?.notes || "",
     },
   })
@@ -255,6 +259,38 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   value={rating}
                   onChange={(value) => setValue("rating", value)}
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="brewDate">Data do preparo</Label>
+                <Input
+                  id="brewDate"
+                  type="date"
+                  {...register("brewDate")}
+                  required
+                />
+                {errors.brewDate && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.brewDate.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="brewTime">Hora do preparo</Label>
+                <Input
+                  id="brewTime"
+                  type="time"
+                  {...register("brewTime")}
+                  required
+                />
+                {errors.brewTime && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.brewTime.message}
+                  </p>
+                )}
               </div>
             </div>
 

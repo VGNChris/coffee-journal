@@ -48,7 +48,7 @@ export default async function BrewDetailPage({ params }: { params: { id: string 
         <div>
           <h1 className="text-2xl md:text-3xl font-bold mb-2">{brew.brewingMethod}</h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            Preparo de {brew.coffeeName} em {formatDate(brew.createdAt)}
+            Preparo de {brew.coffeeName} em {formatDate(brew.brewDate)} às {brew.brewTime}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

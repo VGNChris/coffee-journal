@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Coffee } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Header() {
   return (
@@ -17,6 +18,7 @@ export function Header() {
           <Link href="/brews">
             <Button variant="ghost">Diário do barista</Button>
           </Link>
+          <ThemeToggle />
         </nav>
       </div>
     </header>

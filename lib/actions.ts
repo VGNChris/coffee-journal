@@ -192,15 +192,27 @@ export async function updateBrew(
 
 export async function deleteCoffee(id: number): Promise<{ success: boolean; redirect: string }> {
   try {
+    // Primeiro deletar os preparos relacionados
+    await sql`
+      DELETE FROM brews
+      WHERE coffee_id = ${id}
+    `
+
+    // Depois deletar o café
     await sql`
       DELETE FROM coffees
       WHERE id = ${id}
     `
+
+    // Revalidar todas as rotas que podem ter sido afetadas
     revalidatePath("/coffees")
+    revalidatePath(`/coffees/${id}`)
+    revalidatePath("/brews")
+    
     return { success: true, redirect: "/coffees" }
   } catch (error) {
-    console.error("Database Error:", error)
-    throw new Error("Failed to delete coffee.")
+    console.error("Erro ao deletar café:", error)
+    throw new Error("Falha ao deletar café.")
   }
 }
 

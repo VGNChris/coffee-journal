@@ -4,6 +4,9 @@ import Link from "next/link"
 import { Coffee, Plus } from "lucide-react"
 import { CoffeeCard } from "@/components/coffee-card"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function CoffeesPage() {
   const coffees = await getCoffees()
 

@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Diário de Café",
+  title: "Diário do Café",
   description: "Anote, ajuste, repita! Transforme cada café em uma experiência personalizada e descubra a combinação que faz seu coração (e seu paladar) vibrar. 🔥",
     generator: 'Chris Oliveira'
 }

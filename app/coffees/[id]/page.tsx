@@ -6,14 +6,23 @@ import { notFound, redirect } from "next/navigation"
 import { formatDate } from "@/lib/utils"
 import { deleteCoffee } from "@/lib/actions"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function CoffeeDetailPage({ params }: { params: { id: string } }) {
-  const coffeeId = Number.parseInt(params.id);
-  const coffee = await getCoffeeById(coffeeId);
-  const recentBrews = await getBrewsByCoffeeId(coffeeId);
+  const coffeeId = Number.parseInt(params.id)
+  
+  if (isNaN(coffeeId)) {
+    notFound()
+  }
+
+  const coffee = await getCoffeeById(coffeeId)
 
   if (!coffee) {
     notFound()
   }
+
+  const recentBrews = await getBrewsByCoffeeId(coffeeId)
 
   // Log para depuração
   console.log("Exibindo café:", coffee)
@@ -22,9 +31,14 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
 
   async function deleteCoffeeAction() {
     'use server'
-    if (!coffee) return
-    const result = await deleteCoffee(coffee.id)
-    redirect(result.redirect)
+    
+    try {
+      const result = await deleteCoffee(coffeeId)
+      redirect(result.redirect)
+    } catch (error) {
+      console.error("Erro ao deletar café:", error)
+      throw new Error("Falha ao deletar café")
+    }
   }
 
   return (
@@ -137,7 +151,7 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
                       <span className="text-muted-foreground ml-1">{brew.grinderSetting}</span>
                     </div>
                     <div>
-                      <span className="font-medium">Tempo de extração (s):</span>
+                      <span className="font-medium">Tempo de extração:</span>
                       <span className="text-muted-foreground ml-1">{brew.extractionTime}s</span>
                     </div>
                   </div>

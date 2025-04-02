@@ -11,8 +11,8 @@ export function formatDate(date: string | Date): string {
     if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
       // Para datas no formato ISO, cria um objeto Date com o timezone correto
       const [year, month, day] = date.split('-').map(Number)
-      // Cria a data no timezone local
-      dateObj = new Date(year, month - 1, day)
+      // Cria a data usando UTC para evitar problemas de timezone
+      dateObj = new Date(Date.UTC(year, month - 1, day))
     } else {
       // Para outros formatos, usa o construtor padrão
       dateObj = new Date(date)

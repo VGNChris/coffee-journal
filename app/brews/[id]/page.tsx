@@ -1,15 +1,23 @@
 import { getBrewById } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowLeft, Edit, Coffee } from "lucide-react"
-import { notFound } from "next/navigation"
+import { ArrowLeft, Edit, Coffee, Trash2 } from "lucide-react"
+import { notFound, redirect } from "next/navigation"
 import { formatDate } from "@/lib/utils"
+import { deleteBrew } from "@/lib/actions"
 
 export default async function BrewDetailPage({ params }: { params: { id: string } }) {
   const brew = await getBrewById(Number.parseInt(params.id))
 
   if (!brew) {
     notFound()
+  }
+
+  async function deleteBrewAction() {
+    'use server'
+    if (!brew) return
+    const result = await deleteBrew(brew.id)
+    redirect(result.redirect)
   }
 
   return (
@@ -35,6 +43,11 @@ export default async function BrewDetailPage({ params }: { params: { id: string 
               <Edit className="mr-2 h-4 w-4" /> Editar preparo
             </Button>
           </Link>
+          <form action={deleteBrewAction}>
+            <Button variant="destructive">
+              <Trash2 className="mr-2 h-4 w-4" /> Excluir preparo
+            </Button>
+          </form>
           <Link href={`/coffees/${brew.coffee.id}`}>
             <Button variant="secondary">
               <Coffee className="mr-2 h-4 w-4" /> Ver café

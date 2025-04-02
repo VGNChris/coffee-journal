@@ -190,3 +190,31 @@ export async function updateBrew(
   }
 }
 
+export async function deleteCoffee(id: number): Promise<{ success: boolean; redirect: string }> {
+  try {
+    await sql`
+      DELETE FROM coffees
+      WHERE id = ${id}
+    `
+    revalidatePath("/coffees")
+    return { success: true, redirect: "/coffees" }
+  } catch (error) {
+    console.error("Database Error:", error)
+    throw new Error("Failed to delete coffee.")
+  }
+}
+
+export async function deleteBrew(id: number): Promise<{ success: boolean; redirect: string }> {
+  try {
+    await sql`
+      DELETE FROM brews
+      WHERE id = ${id}
+    `
+    revalidatePath("/brews")
+    return { success: true, redirect: "/brews" }
+  } catch (error) {
+    console.error("Database Error:", error)
+    throw new Error("Failed to delete brew.")
+  }
+}
+

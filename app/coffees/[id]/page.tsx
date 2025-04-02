@@ -1,9 +1,10 @@
 import { getCoffeeById, getBrewsByCoffeeId } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowLeft, Edit, CoffeeIcon as CoffeeBeaker } from 'lucide-react'
-import { notFound } from "next/navigation"
+import { ArrowLeft, Edit, CoffeeIcon as CoffeeBeaker, Trash2 } from 'lucide-react'
+import { notFound, redirect } from "next/navigation"
 import { formatDate } from "@/lib/utils"
+import { deleteCoffee } from "@/lib/actions"
 
 export default async function CoffeeDetailPage({ params }: { params: { id: string } }) {
   const coffeeId = Number.parseInt(params.id);
@@ -18,6 +19,13 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
   console.log("Exibindo café:", coffee)
   console.log("Perfil sensorial:", coffee.sensoryProfile)
   console.log("Preparos recentes:", recentBrews)
+
+  async function deleteCoffeeAction() {
+    'use server'
+    if (!coffee) return
+    const result = await deleteCoffee(coffee.id)
+    redirect(result.redirect)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,6 +45,11 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
               <Edit className="mr-2 h-4 w-4" /> Editar café
             </Button>
           </Link>
+          <form action={deleteCoffeeAction}>
+            <Button variant="destructive">
+              <Trash2 className="mr-2 h-4 w-4" /> Excluir café
+            </Button>
+          </form>
           <Link href={`/brews/new?coffeeId=${coffee.id}`}>
             <Button>
               <CoffeeBeaker className="mr-2 h-4 w-4" /> Adicionar preparo

@@ -116,15 +116,15 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-sm">
                     <div>
-                      <span className="font-medium">Água:</span>
+                      <span className="font-medium">Temperatura da água:</span>
                       <span className="text-muted-foreground ml-1">{brew.waterTemperature}°C</span>
                     </div>
                     <div>
-                      <span className="font-medium">Moagem:</span>
+                      <span className="font-medium">Click do moedor:</span>
                       <span className="text-muted-foreground ml-1">{brew.grinderSetting}</span>
                     </div>
                     <div>
-                      <span className="font-medium">Tempo:</span>
+                      <span className="font-medium">Tempo de extração (s):</span>
                       <span className="text-muted-foreground ml-1">{brew.extractionTime}s</span>
                     </div>
                   </div>

@@ -20,140 +20,120 @@ interface CoffeeFormProps {
 
 export function CoffeeForm({ coffee }: CoffeeFormProps) {
   const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
-    name: coffee?.name || "",
-    sensoryProfile: coffee?.sensoryProfile || "",
-    region: coffee?.region || "",
-    producer: coffee?.producer || "",
-    variety: coffee?.variety || "",
-    process: coffee?.process || "",
-    altitude: coffee?.altitude || "",
-  })
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setIsLoading(true)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    const formData = new FormData(event.currentTarget)
+    const data = {
+      name: formData.get("name"),
+      sensoryProfile: formData.get("sensoryProfile"),
+      region: formData.get("region"),
+      producer: formData.get("producer"),
+      variety: formData.get("variety"),
+      process: formData.get("process"),
+      altitude: formData.get("altitude"),
+    }
 
     try {
-      console.log("Enviando dados do café:", formData)
+      const response = await fetch(coffee ? `/api/coffees/${coffee.id}` : "/api/coffees", {
+        method: coffee ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
 
-      if (coffee) {
-        await updateCoffee(coffee.id, formData)
-        toast({
-          title: "Café atualizado",
-          description: "O café foi atualizado com sucesso.",
-        })
-      } else {
-        await createCoffee(formData)
-        toast({
-          title: "Café adicionado",
-          description: "O café foi adicionado com sucesso.",
-        })
+      if (!response.ok) {
+        throw new Error("Falha ao salvar café")
       }
 
+      const result = await response.json()
       router.push("/coffees")
       router.refresh()
+      toast.success("Café salvo com sucesso!")
     } catch (error) {
       console.error("Erro ao salvar café:", error)
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro ao salvar o café. Tente novamente.",
-        variant: "destructive",
-      })
+      toast.error("Erro ao salvar café. Por favor, tente novamente.")
     } finally {
-      setIsSubmitting(false)
+      setIsLoading(false)
     }
   }
 
   return (
     <Card>
       <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Nome do Café</Label>
-              <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
-            </div>
-
-            <div>
-              <Label htmlFor="sensoryProfile">Perfil Sensorial</Label>
-              <Textarea
-                id="sensoryProfile"
-                name="sensoryProfile"
-                placeholder="Descreva as notas de sabor (ex: Cítrico, Chocolate, Floral)"
-                value={formData.sensoryProfile}
-                onChange={handleChange}
-                required
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome</Label>
+              <Input
+                type="text"
+                name="name"
+                placeholder="Nome do café"
+                defaultValue={coffee?.name}
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="region">Região</Label>
-                <Input
-                  id="region"
-                  name="region"
-                  placeholder="País ou região específica"
-                  value={formData.region}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="producer">Produtor</Label>
-                <Input
-                  id="producer"
-                  name="producer"
-                  placeholder="Nome da fazenda ou cooperativa"
-                  value={formData.producer}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="sensoryProfile">Perfil sensorial</Label>
+              <Input
+                type="text"
+                name="sensoryProfile"
+                placeholder="Ex: Chocolate, caramelo, frutas vermelhas"
+                defaultValue={coffee?.sensoryProfile}
+              />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="variety">Variedade</Label>
-                <Input
-                  id="variety"
-                  name="variety"
-                  placeholder="Ex: Bourbon, Typica, Gesha"
-                  value={formData.variety}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="process">Processo</Label>
-                <Input
-                  id="process"
-                  name="process"
-                  placeholder="Ex: Lavado, Natural, Honey"
-                  value={formData.process}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="region">Região</Label>
+              <Input
+                type="text"
+                name="region"
+                placeholder="Ex: Mantiqueira de Minas"
+                defaultValue={coffee?.region}
+              />
             </div>
 
-            <div>
+            <div className="space-y-2">
+              <Label htmlFor="producer">Produtor</Label>
+              <Input
+                type="text"
+                name="producer"
+                placeholder="Nome do produtor"
+                defaultValue={coffee?.producer}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="variety">Variedade</Label>
+              <Input
+                type="text"
+                name="variety"
+                placeholder="Ex: Catuaí Vermelho"
+                defaultValue={coffee?.variety}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="process">Processo</Label>
+              <Input
+                type="text"
+                name="process"
+                placeholder="Ex: Natural"
+                defaultValue={coffee?.process}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="altitude">Altitude</Label>
               <Input
-                id="altitude"
+                type="text"
                 name="altitude"
-                placeholder="Ex: 1200-1500m"
-                value={formData.altitude}
-                onChange={handleChange}
-                required
+                placeholder="Ex: 1200m"
+                defaultValue={coffee?.altitude}
               />
             </div>
           </div>
@@ -164,8 +144,8 @@ export function CoffeeForm({ coffee }: CoffeeFormProps) {
                 Cancelar
               </Button>
             </Link>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Salvando..." : coffee ? "Atualizar Café" : "Adicionar Café"}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Salvando..." : coffee ? "Salvar alterações" : "Adicionar café"}
             </Button>
           </div>
         </form>

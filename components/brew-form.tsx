@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { createBrew, updateBrew } from "@/lib/actions"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { Slider } from "@/components/ui/slider"
+import { toast } from "sonner"
 
 interface BrewFormProps {
   brew?: Brew
@@ -42,6 +44,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
       acidity,
       sweetness,
       body,
+      notes: formData.get("notes") as string,
     }
 
     try {
@@ -52,8 +55,10 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
       }
       router.push("/brews")
       router.refresh()
+      toast.success("Preparo salvo com sucesso!")
     } catch (error) {
-      console.error("Error saving brew:", error)
+      console.error("Erro ao salvar preparo:", error)
+      toast.error("Erro ao salvar preparo. Por favor, tente novamente mais tarde.")
     } finally {
       setIsSubmitting(false)
     }
@@ -175,6 +180,11 @@ export function BrewForm({ brew, coffees, selectedCoffeeId }: BrewFormProps) {
                 </div>
                 <Slider value={[body]} min={1} max={5} step={1} onValueChange={(value) => setBody(value[0])} />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notas</Label>
+              <Textarea name="notes" placeholder="Descreva suas impressões sobre o preparo..." />
             </div>
           </div>
 

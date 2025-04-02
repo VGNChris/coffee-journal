@@ -1,7 +1,8 @@
 import { getBrews } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CoffeeIcon as CoffeeBeaker, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
+import { BookIcon } from "@/components/icons/book-icon"
 import { BrewCard } from "@/components/brew-card"
 
 export default async function BrewsPage() {
@@ -23,7 +24,7 @@ export default async function BrewsPage() {
 
       {brews.length === 0 ? (
         <div className="text-center py-12 border rounded-lg bg-card">
-          <CoffeeBeaker className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <BookIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-xl font-medium mb-2">Sem preparos aqui</h3>
           <p className="text-muted-foreground mb-4">Adicione seu primeiro preparo para começar sua experiência</p>
           <Link href="/brews/new">

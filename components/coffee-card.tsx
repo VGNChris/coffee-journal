@@ -1,8 +1,7 @@
-import type { Coffee } from "@/lib/types"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CoffeeIcon as CoffeeBeaker, MapPin } from "lucide-react"
+import { MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import type { Coffee } from "@/lib/types"
 
 interface CoffeeCardProps {
   coffee: Coffee
@@ -10,44 +9,49 @@ interface CoffeeCardProps {
 
 export function CoffeeCard({ coffee }: CoffeeCardProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="line-clamp-1">{coffee.name}</CardTitle>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <MapPin className="h-3 w-3 mr-1" />
-          {coffee.region}
+    <div className="bg-card border rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
+      <div className="p-4 md:p-6">
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-semibold text-base md:text-lg line-clamp-1">
+                {coffee.name}
+              </h3>
+              <div className="flex items-center text-muted-foreground mt-1">
+                <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
+                <span className="text-sm line-clamp-1">{coffee.region}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <div>
+              <dt className="sr-only">Perfil sensorial</dt>
+              <dd className="text-sm text-muted-foreground line-clamp-2">
+                {coffee.sensoryProfile}
+              </dd>
+            </div>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <div className="flex-1 min-w-[120px]">
+                <dt className="text-muted-foreground">Processo</dt>
+                <dd className="font-medium truncate">{coffee.process}</dd>
+              </div>
+              <div className="flex-1 min-w-[120px]">
+                <dt className="text-muted-foreground">Variedade</dt>
+                <dd className="font-medium truncate">{coffee.variety}</dd>
+              </div>
+            </div>
+          </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <div>
-            <span className="text-sm font-medium">Perfil sensorial:</span>
-            <p className="text-sm text-muted-foreground line-clamp-2">{coffee.sensoryProfile || "Not specified"}</p>
-          </div>
-          <div>
-            <span className="text-sm font-medium">Processo:</span>
-            <p className="text-sm text-muted-foreground">{coffee.process}</p>
-          </div>
-          <div>
-            <span className="text-sm font-medium">Variedade:</span>
-            <p className="text-sm text-muted-foreground">{coffee.variety}</p>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Link href={`/coffees/${coffee.id}`}>
-          <Button variant="outline" size="sm">
+      </div>
+      <div className="p-4 md:p-6 pt-0 mt-2">
+        <Link href={`/coffees/${coffee.id}`} className="w-full">
+          <Button variant="outline" className="w-full">
             Ver detalhes
           </Button>
         </Link>
-        <Link href={`/brews/new?coffeeId=${coffee.id}`}>
-          <Button size="sm">
-            <CoffeeBeaker className="mr-2 h-4 w-4" />
-            Adicionar preparo
-          </Button>
-        </Link>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   )
 }
 

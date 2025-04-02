@@ -1,51 +1,53 @@
-import Link from "next/link"
-import { Coffee, CoffeeIcon as CoffeeBeaker, Database } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Coffee } from "lucide-react"
+import { BookIcon } from "@/components/icons/book-icon"
+import Link from "next/link"
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Diário do café</h1>
-          <p className="text-lg text-muted-foreground">
-          Anote, ajuste, repita! Transforme cada café em uma experiência personalizada e descubra a combinação que faz seu coração (e seu paladar) vibrar. 🔥
-          </p>
-        </div>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold">Bem-vindo ao Coffee Journal</h1>
+        <p className="text-sm md:text-base text-muted-foreground mt-2">
+          Registre seus cafés e preparos para aprimorar sua experiência com café especial
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Link
-            href="/coffees"
-            className="bg-card hover:bg-card/90 transition-colors border rounded-lg p-6 flex flex-col items-center text-center"
-          >
-            <Coffee size={48} className="mb-4 text-primary" />
-            <h2 className="text-2xl font-semibold mb-2">Meus cafés</h2>
-            <p className="text-muted-foreground">
-            Viaje pelas origens, processos e aromas do seu café. Organize sua coleção como um curador de experiências, onde cada grão revela um capítulo de sabor e tradição.
-            </p>
-          </Link>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col items-center text-center">
+              <Coffee className="h-12 w-12 mb-4 text-primary" />
+              <h2 className="text-lg md:text-xl font-semibold mb-2">Diário do Café</h2>
+              <p className="text-sm md:text-base text-muted-foreground mb-4">
+                Registre informações sobre seus cafés especiais, como origem, variedade e processo
+              </p>
+              <Link href="/coffees">
+                <Button>
+                  <Coffee className="mr-2 h-4 w-4" /> Ver meus cafés
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Link
-            href="/brews"
-            className="bg-card hover:bg-card/90 transition-colors border rounded-lg p-6 flex flex-col items-center text-center"
-          >
-            <CoffeeBeaker size={48} className="mb-4 text-primary" />
-            <h2 className="text-2xl font-semibold mb-2">Diário do barista</h2>
-            <p className="text-muted-foreground">
-            Seu Banco de Dados Sensorial: armazene métodos, métricas e impressões de cada extração. Compare, analise e eleve sua expertise de home barista.🔍📊 
-            </p>
-          </Link>
-        </div>
-
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">Primeiro uso? Inicialize o banco de dados:</p>
-          <Link href="/api/setup">
-            <Button variant="outline">
-              <Database className="mr-2 h-4 w-4" />
-              Configure o banco de dados
-            </Button>
-          </Link>
-        </div>
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col items-center text-center">
+              <BookIcon className="h-12 w-12 mb-4 text-primary" />
+              <h2 className="text-lg md:text-xl font-semibold mb-2">Diário do Barista</h2>
+              <p className="text-sm md:text-base text-muted-foreground mb-4">
+                Registre seus preparos, acompanhe a evolução e aprimore sua técnica
+              </p>
+              <Link href="/brews">
+                <Button>
+                  <BookIcon className="mr-2 h-4 w-4" /> Ver meus preparos
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

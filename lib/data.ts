@@ -16,17 +16,18 @@ export async function getCoffees(): Promise<Coffee[]> {
         c.producer, 
         c.variety, 
         c.process, 
-        c.altitude, 
+        c.altitude,
+        c.rating,
         c.created_at as "createdAt", 
-        c.updated_at as "updatedAt",
-        COALESCE(AVG((b.acidity + b.sweetness + b.body) / 3), 0) as rating
+        c.updated_at as "updatedAt"
       FROM coffees c
-      LEFT JOIN brews b ON c.id = b.coffee_id
-      GROUP BY c.id, c.name, c.sensory_profile, c.region, c.producer, c.variety, c.process, c.altitude, c.created_at, c.updated_at
       ORDER BY c.created_at DESC
     `
     console.log("Cafés recuperados:", result)
-    return result as unknown as Coffee[]
+    return result.map(coffee => ({
+      ...coffee,
+      rating: Number(coffee.rating)
+    })) as Coffee[]
   } catch (error) {
     console.error("Database Error:", error)
     return []
@@ -35,6 +36,13 @@ export async function getCoffees(): Promise<Coffee[]> {
 
 export async function getCoffeeById(id: number): Promise<Coffee | null> {
   try {
+    console.log("Buscando café com ID:", id)
+    
+    if (!process.env.DATABASE_URL) {
+      console.error("DATABASE_URL não está definida")
+      return null
+    }
+
     const coffees = await sql`
       SELECT 
         c.id, 
@@ -44,22 +52,34 @@ export async function getCoffeeById(id: number): Promise<Coffee | null> {
         c.producer, 
         c.variety, 
         c.process, 
-        c.altitude, 
+        c.altitude,
+        c.rating,
         c.created_at as "createdAt", 
-        c.updated_at as "updatedAt",
-        COALESCE(AVG((b.acidity + b.sweetness + b.body) / 3), 0) as rating
+        c.updated_at as "updatedAt"
       FROM coffees c
-      LEFT JOIN brews b ON c.id = b.coffee_id
       WHERE c.id = ${id}
-      GROUP BY c.id, c.name, c.sensory_profile, c.region, c.producer, c.variety, c.process, c.altitude, c.created_at, c.updated_at
     `
 
-    if (coffees.length > 0) {
-      console.log("Café recuperado do banco de dados:", coffees[0])
+    console.log("Resultado da consulta:", coffees)
+
+    if (coffees.length === 0) {
+      console.log("Nenhum café encontrado com o ID:", id)
+      return null
     }
-    return coffees.length > 0 ? coffees[0] as unknown as Coffee : null
+
+    const coffee = {
+      ...coffees[0],
+      rating: Number(coffees[0].rating)
+    } as Coffee
+
+    console.log("Café encontrado:", coffee)
+    return coffee
   } catch (error) {
-    console.error("Database Error:", error)
+    console.error("Erro ao buscar café:", error)
+    if (error instanceof Error) {
+      console.error("Detalhes do erro:", error.message)
+      console.error("Stack trace:", error.stack)
+    }
     return null
   }
 }

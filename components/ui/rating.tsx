@@ -4,20 +4,20 @@ import * as React from "react"
 import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface RatingProps extends React.HTMLAttributes<HTMLDivElement> {
+interface RatingProps {
   value: number
   onChange?: (value: number) => void
   readOnly?: boolean
   size?: "sm" | "md" | "lg"
+  className?: string
 }
 
 export function Rating({
-  value,
+  value = 0,
   onChange,
   readOnly = false,
   size = "md",
   className,
-  ...props
 }: RatingProps) {
   const [hoveredValue, setHoveredValue] = React.useState<number | null>(null)
   const [isHovering, setIsHovering] = React.useState(false)
@@ -40,12 +40,11 @@ export function Rating({
   return (
     <div
       className={cn("flex items-center gap-1", className)}
-      onMouseEnter={() => setIsHovering(true)}
+      onMouseEnter={() => !readOnly && setIsHovering(true)}
       onMouseLeave={() => {
-        setIsHovering(false)
+        !readOnly && setIsHovering(false)
         setHoveredValue(null)
       }}
-      {...props}
     >
       {[1, 2, 3, 4, 5].map((starValue) => {
         const isActive = isHovering
@@ -57,15 +56,22 @@ export function Rating({
             key={starValue}
             type="button"
             className={cn(
-              "text-muted-foreground hover:text-primary transition-colors",
-              isActive && "text-primary fill-primary"
+              "rounded-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+              readOnly
+                ? isActive
+                  ? "[&>svg]:fill-yellow-400 [&>svg]:text-yellow-400"
+                  : "[&>svg]:text-muted-foreground"
+                : cn(
+                    "[&>svg]:text-muted-foreground hover:[&>svg]:text-yellow-400 hover:[&>svg]:fill-yellow-400 transition-colors",
+                    isActive && "[&>svg]:text-yellow-400 [&>svg]:fill-yellow-400"
+                  )
             )}
             onClick={() => handleClick(starValue)}
-            onMouseEnter={() => setHoveredValue(starValue)}
+            onMouseEnter={() => !readOnly && setHoveredValue(starValue)}
             disabled={readOnly}
             aria-label={`Avaliar com ${starValue} ${starValue === 1 ? "estrela" : "estrelas"}`}
           >
-            <Star className={sizeClasses[size]} />
+            <Star className={cn(sizeClasses[size])} />
           </button>
         )
       })}

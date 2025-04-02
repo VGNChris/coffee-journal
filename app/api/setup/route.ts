@@ -13,21 +13,6 @@ export async function GET() {
       )
     }
 
-    // Adicionar coluna rating se não existir
-    await sql`
-      DO $$ 
-      BEGIN 
-        IF NOT EXISTS (
-          SELECT 1 
-          FROM information_schema.columns 
-          WHERE table_name = 'coffees' 
-          AND column_name = 'rating'
-        ) THEN
-          ALTER TABLE coffees ADD COLUMN rating DECIMAL(2,1) DEFAULT 0;
-        END IF;
-      END $$;
-    `
-
     // Create coffees table
     await sql`
       CREATE TABLE IF NOT EXISTS coffees (

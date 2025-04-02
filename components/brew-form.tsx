@@ -62,10 +62,10 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
     resolver: zodResolver(brewSchema),
     defaultValues: {
       coffeeId: Number.parseInt(coffeeId) || brew?.coffeeId || 0,
-      brewingMethod: brew?.brewingMethod || "",
-      waterTemperature: brew?.waterTemperature || 0,
-      grinderSetting: brew?.grinderSetting || 0,
-      extractionTime: brew?.extractionTime || 0,
+      brewingMethod: brew?.brewingMethod || "V60",
+      waterTemperature: brew?.waterTemperature || 92,
+      grinderSetting: brew?.grinderSetting || 15,
+      extractionTime: brew?.extractionTime || 180,
       acidity: brew?.acidity || 3,
       sweetness: brew?.sweetness || 3,
       body: brew?.body || 3,
@@ -131,7 +131,11 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
 
             <div>
               <Label htmlFor="brewingMethod">Método de extração</Label>
-              <Select {...register("brewingMethod")} required>
+              <Select 
+                value={watch("brewingMethod")} 
+                onValueChange={(value) => setValue("brewingMethod", value)}
+                required
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o método de extração" />
                 </SelectTrigger>

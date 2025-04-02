@@ -127,6 +127,24 @@ export async function createBrew(data: {
   notes?: string
 }): Promise<{ success: boolean; data: Brew }> {
   try {
+    console.log("Criando preparo com dados:", data)
+
+    // Verificar se todos os campos obrigatórios estão presentes
+    if (
+      !data.coffeeId ||
+      !data.brewingMethod ||
+      !data.waterTemperature ||
+      !data.grinderSetting ||
+      !data.extractionTime ||
+      !data.acidity ||
+      !data.sweetness ||
+      !data.body ||
+      !data.brewDate ||
+      !data.brewTime
+    ) {
+      throw new Error("Todos os campos obrigatórios são necessários")
+    }
+
     const result = await sql`
       INSERT INTO brews (
         coffee_id, 
@@ -154,21 +172,38 @@ export async function createBrew(data: {
         ${data.sweetness}, 
         ${data.body},
         ${data.rating},
-        ${data.brewDate},
-        ${data.brewTime},
+        ${data.brewDate}::date,
+        ${data.brewTime}::time,
         ${data.notes},
         NOW(), 
         NOW()
       )
-      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, brew_date as "brewDate", brew_time as "brewTime", notes, created_at as "createdAt", updated_at as "updatedAt"
+      RETURNING 
+        id, 
+        coffee_id as "coffeeId", 
+        brewing_method as "brewingMethod", 
+        water_temperature as "waterTemperature", 
+        grinder_setting as "grinderSetting", 
+        extraction_time as "extractionTime", 
+        acidity, 
+        sweetness, 
+        body, 
+        rating,
+        brew_date as "brewDate",
+        brew_time as "brewTime",
+        notes, 
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
     `
+
+    console.log("Preparo criado com sucesso:", result)
 
     revalidatePath("/brews")
     revalidatePath(`/coffees/${data.coffeeId}`)
     return { success: true, data: result[0] }
   } catch (error) {
-    console.error("Database Error:", error)
-    throw new Error("Failed to create brew.")
+    console.error("Erro ao criar preparo:", error)
+    throw new Error(`Falha ao criar preparo: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 

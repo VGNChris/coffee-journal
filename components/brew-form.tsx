@@ -226,11 +226,11 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   <span className="text-muted-foreground">{acidity}</span>
                 </div>
                 <Slider
-                  value={[acidity]}
+                  defaultValue={[acidity]}
                   min={0}
                   max={10}
                   step={1}
-                  onValueChange={(value) => setValue("acidity", value[0])}
+                  onValueChange={(value: number[]) => setValue("acidity", value[0])}
                 />
                 {errors.acidity && (
                   <p className="text-sm text-red-500 mt-1">{errors.acidity.message}</p>
@@ -243,11 +243,11 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   <span className="text-muted-foreground">{sweetness}</span>
                 </div>
                 <Slider
-                  value={[sweetness]}
+                  defaultValue={[sweetness]}
                   min={0}
                   max={10}
                   step={1}
-                  onValueChange={(value) => setValue("sweetness", value[0])}
+                  onValueChange={(value: number[]) => setValue("sweetness", value[0])}
                 />
                 {errors.sweetness && (
                   <p className="text-sm text-red-500 mt-1">
@@ -262,11 +262,11 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   <span className="text-muted-foreground">{body}</span>
                 </div>
                 <Slider
-                  value={[body]}
+                  defaultValue={[body]}
                   min={0}
                   max={10}
                   step={1}
-                  onValueChange={(value) => setValue("body", value[0])}
+                  onValueChange={(value: number[]) => setValue("body", value[0])}
                 />
                 {errors.body && (
                   <p className="text-sm text-red-500 mt-1">{errors.body.message}</p>

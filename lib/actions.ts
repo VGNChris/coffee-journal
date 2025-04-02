@@ -210,6 +210,10 @@ export async function createBrew(data: {
 
     console.log("Preparo criado com sucesso:", result)
 
+    if (!result || result.length === 0) {
+      throw new Error("Falha ao criar preparo: nenhum resultado retornado")
+    }
+
     revalidatePath("/brews")
     revalidatePath(`/coffees/${data.coffeeId}`)
     return { success: true, data: result[0] as Brew }

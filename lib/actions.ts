@@ -142,6 +142,18 @@ export async function createBrew(data: {
       !data.brewDate ||
       !data.brewTime
     ) {
+      console.error("Campos obrigatórios faltando:", {
+        coffeeId: data.coffeeId,
+        brewingMethod: data.brewingMethod,
+        waterTemperature: data.waterTemperature,
+        grinderSetting: data.grinderSetting,
+        extractionTime: data.extractionTime,
+        acidity: data.acidity,
+        sweetness: data.sweetness,
+        body: data.body,
+        brewDate: data.brewDate,
+        brewTime: data.brewTime
+      })
       throw new Error("Todos os campos obrigatórios são necessários")
     }
 
@@ -174,7 +186,7 @@ export async function createBrew(data: {
         ${data.rating},
         ${data.brewDate}::date,
         ${data.brewTime}::time,
-        ${data.notes},
+        ${data.notes || null},
         NOW(), 
         NOW()
       )
@@ -200,9 +212,13 @@ export async function createBrew(data: {
 
     revalidatePath("/brews")
     revalidatePath(`/coffees/${data.coffeeId}`)
-    return { success: true, data: result[0] }
+    return { success: true, data: result[0] as Brew }
   } catch (error) {
     console.error("Erro ao criar preparo:", error)
+    if (error instanceof Error) {
+      console.error("Detalhes do erro:", error.message)
+      console.error("Stack trace:", error.stack)
+    }
     throw new Error(`Falha ao criar preparo: ${error instanceof Error ? error.message : String(error)}`)
   }
 }

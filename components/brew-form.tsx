@@ -83,32 +83,40 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
     }
   }, [coffeeId, setValue])
 
-  const onSubmit = async (data: BrewFormData) => {
+  const onSubmit = async (values: z.infer<typeof brewSchema>) => {
     try {
-      setIsSubmitting(true)
-      const result = brew
-        ? await updateBrew(brew.id, data)
-        : await createBrew(data)
+      console.log("Enviando dados do formulário:", values)
+      
+      const result = await createBrew({
+        ...values,
+        coffeeId: coffeeId || 0,
+        waterTemperature: Number(values.waterTemperature),
+        grinderSetting: Number(values.grinderSetting),
+        extractionTime: Number(values.extractionTime),
+        acidity: Number(values.acidity),
+        sweetness: Number(values.sweetness),
+        body: Number(values.body),
+        rating: Number(values.rating),
+        brewDate: values.brewDate,
+        brewTime: values.brewTime,
+        notes: values.notes || undefined
+      })
 
+      console.log("Resultado da criação:", result)
+      
       if (result.success) {
-        onSuccess?.(result.data)
-        toast(brew ? "Preparo atualizado com sucesso!" : "Preparo criado com sucesso!")
-        
-        // Retorna para a página anterior ou para a página do café
-        if (selectedCoffeeId) {
-          router.push(`/coffees/${selectedCoffeeId}`)
-        } else if (brew?.coffeeId) {
-          router.push(`/coffees/${brew.coffeeId}`)
+        toast.success("Preparo salvo com sucesso!")
+        if (coffeeId) {
+          router.push(`/coffees/${coffeeId}`)
         } else {
           router.push("/brews")
         }
-        router.refresh()
+      } else {
+        throw new Error("Falha ao salvar preparo")
       }
     } catch (error) {
       console.error("Erro ao salvar preparo:", error)
-      toast("Erro ao salvar preparo. Por favor, tente novamente.")
-    } finally {
-      setIsSubmitting(false)
+      toast.error(error instanceof Error ? error.message : "Erro ao salvar preparo")
     }
   }
 

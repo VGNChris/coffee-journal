@@ -113,13 +113,13 @@ export default async function CoffeePage({ params }: { params: { id: string } })
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="text-muted-foreground">Acidez:</span> {brew.acidity}/5
+                        <span className="text-muted-foreground">Acidez:</span> {brew.acidity}/10
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Doçura:</span> {brew.sweetness}/5
+                        <span className="text-muted-foreground">Doçura:</span> {brew.sweetness}/10
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Corpo:</span> {brew.body}/5
+                        <span className="text-muted-foreground">Corpo:</span> {brew.body}/10
                       </div>
                     </div>
                   </div>

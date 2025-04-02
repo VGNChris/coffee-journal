@@ -11,8 +11,8 @@ export function formatDate(date: string | Date): string {
     if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
       // Para datas no formato ISO, cria um objeto Date com o timezone correto
       const [year, month, day] = date.split('-').map(Number)
-      // Cria a data usando UTC para evitar problemas de timezone
-      dateObj = new Date(Date.UTC(year, month - 1, day))
+      // Cria a data usando UTC e ajusta para o timezone de São Paulo (-3 horas)
+      dateObj = new Date(Date.UTC(year, month - 1, day, 3, 0, 0))
     } else {
       // Para outros formatos, usa o construtor padrão
       dateObj = new Date(date)
@@ -26,7 +26,7 @@ export function formatDate(date: string | Date): string {
     day: '2-digit',
     month: '2-digit',
     year: '2-digit',
-    timeZone: 'America/Sao_Paulo'
+    timeZone: 'UTC'  // Usando UTC já que ajustamos a data manualmente
   })
   
   // Formata a data usando o formatador

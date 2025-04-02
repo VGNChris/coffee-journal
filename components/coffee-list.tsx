@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+<<<<<<< HEAD
 import Link from "next/link"
 import { Coffee, Plus, Edit, Trash2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
@@ -95,10 +96,97 @@ export function CoffeeList({ initialCoffees }: CoffeeListProps) {
           <Link href="/coffees/new">
             <Button>
               <Plus className="mr-2 h-4 w-4"/> Adicionar café
+=======
+import { Input } from "@/components/ui/input"
+import { CoffeeCard } from "@/components/coffee-card"
+import { Rating } from "@/components/ui/rating"
+import { Plus } from "lucide-react"
+import Link from "next/link"
+import type { Coffee } from "@/lib/types"
+
+interface CoffeeListProps {
+  coffees: Coffee[]
+}
+
+export function CoffeeList({ coffees }: CoffeeListProps) {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filterRating, setFilterRating] = useState(0)
+
+  const filteredCoffees = coffees.filter((coffee) => {
+    const matchesSearch = 
+      coffee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      coffee.region.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      coffee.producer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      coffee.variety.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      coffee.process.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesRating = filterRating === 0 || coffee.rating >= filterRating
+    
+    return matchesSearch && matchesRating
+  })
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">Meus cafés</h1>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
+            Registre e acompanhe seus cafés especiais
+          </p>
+        </div>
+        <Link href="/coffees/new">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Adicionar café
+          </Button>
+        </Link>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <Input
+            placeholder="Buscar por nome, região, produtor..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Filtrar por classificação:</span>
+          <Rating
+            value={filterRating}
+            onChange={setFilterRating}
+            size="sm"
+            readOnly={false}
+          />
+          {filterRating > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFilterRating(0)}
+              className="h-8 px-2"
+            >
+              Limpar
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {filteredCoffees.length === 0 ? (
+        <div className="text-center py-12 border rounded-lg bg-card">
+          <h3 className="text-xl font-medium mb-2">Nenhum café encontrado</h3>
+          <p className="text-muted-foreground mb-4">
+            {searchTerm || filterRating > 0
+              ? "Tente ajustar sua busca ou filtro"
+              : "Adicione seu primeiro café para começar"}
+          </p>
+          <Link href="/coffees/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Adicionar café
+>>>>>>> ae0d77a (FIX ERROS)
             </Button>
           </Link>
         </div>
       ) : (
+<<<<<<< HEAD
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredCoffees.map((coffee) => (
             <Card key={coffee.id} className="p-6">
@@ -153,6 +241,20 @@ export function CoffeeList({ initialCoffees }: CoffeeListProps) {
             </Card>
           ))}
         </div>
+=======
+        <>
+          {filterRating > 0 && (
+            <span className="text-sm text-muted-foreground">
+              Mostrando {filteredCoffees.length} de {coffees.length} cafés
+            </span>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredCoffees.map((coffee) => (
+              <CoffeeCard key={coffee.id} coffee={coffee} />
+            ))}
+          </div>
+        </>
+>>>>>>> ae0d77a (FIX ERROS)
       )}
     </div>
   )

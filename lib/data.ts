@@ -9,21 +9,23 @@ export async function getCoffees(): Promise<Coffee[]> {
     }
     const result = await sql`
       SELECT 
-        id, 
-        name, 
-        sensory_profile as "sensoryProfile", 
-        region, 
-        producer, 
-        variety, 
-        process, 
-        altitude, 
-        created_at as "createdAt", 
-        updated_at as "updatedAt"
-      FROM coffees
-      ORDER BY created_at DESC
+        c.id, 
+        c.name, 
+        c.sensory_profile as "sensoryProfile", 
+        c.region, 
+        c.producer, 
+        c.variety, 
+        c.process, 
+        c.altitude, 
+        c.created_at as "createdAt", 
+        c.updated_at as "updatedAt",
+        COALESCE(AVG((b.acidity + b.sweetness + b.body) / 3), 0) as rating
+      FROM coffees c
+      LEFT JOIN brews b ON c.id = b.coffee_id
+      GROUP BY c.id, c.name, c.sensory_profile, c.region, c.producer, c.variety, c.process, c.altitude, c.created_at, c.updated_at
+      ORDER BY c.created_at DESC
     `
     console.log("Cafés recuperados:", result)
-    // Corrigindo o tipo de retorno
     return result as unknown as Coffee[]
   } catch (error) {
     console.error("Database Error:", error)
@@ -35,24 +37,26 @@ export async function getCoffeeById(id: number): Promise<Coffee | null> {
   try {
     const coffees = await sql`
       SELECT 
-        id, 
-        name, 
-        sensory_profile as "sensoryProfile", 
-        region, 
-        producer, 
-        variety, 
-        process, 
-        altitude, 
-        created_at as "createdAt", 
-        updated_at as "updatedAt"
-      FROM coffees
-      WHERE id = ${id}
+        c.id, 
+        c.name, 
+        c.sensory_profile as "sensoryProfile", 
+        c.region, 
+        c.producer, 
+        c.variety, 
+        c.process, 
+        c.altitude, 
+        c.created_at as "createdAt", 
+        c.updated_at as "updatedAt",
+        COALESCE(AVG((b.acidity + b.sweetness + b.body) / 3), 0) as rating
+      FROM coffees c
+      LEFT JOIN brews b ON c.id = b.coffee_id
+      WHERE c.id = ${id}
+      GROUP BY c.id, c.name, c.sensory_profile, c.region, c.producer, c.variety, c.process, c.altitude, c.created_at, c.updated_at
     `
 
     if (coffees.length > 0) {
       console.log("Café recuperado do banco de dados:", coffees[0])
     }
-    // Corrigindo o tipo de retorno
     return coffees.length > 0 ? coffees[0] as unknown as Coffee : null
   } catch (error) {
     console.error("Database Error:", error)

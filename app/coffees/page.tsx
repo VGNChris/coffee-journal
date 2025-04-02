@@ -7,6 +7,10 @@ export const revalidate = 0
 export default async function CoffeesPage() {
   const coffees = await getCoffees()
 
-  return <CoffeeList initialCoffees={coffees} />
+  return (
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <CoffeeList coffees={coffees} />
+    </div>
+  )
 }
 

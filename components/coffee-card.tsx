@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Rating } from "@/components/ui/rating"
 import type { Coffee } from "@/lib/types"
 
 interface CoffeeCardProps {
@@ -9,49 +10,35 @@ interface CoffeeCardProps {
 
 export function CoffeeCard({ coffee }: CoffeeCardProps) {
   return (
-    <div className="bg-card border rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
-      <div className="p-4 md:p-6">
-        <div className="flex flex-col space-y-2">
+    <Link href={`/coffees/${coffee.id}`}>
+      <div className="group relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+        <div className="p-6">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="font-semibold text-base md:text-lg line-clamp-1">
-                {coffee.name}
-              </h3>
-              <div className="flex items-center text-muted-foreground mt-1">
-                <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-                <span className="text-sm line-clamp-1">{coffee.region}</span>
-              </div>
+              <h3 className="font-semibold leading-none tracking-tight">{coffee.name}</h3>
+              <p className="text-sm text-muted-foreground mt-1">{coffee.sensoryProfile}</p>
             </div>
+            <Rating value={coffee.rating} readOnly size="sm" />
           </div>
 
-          <div className="space-y-1.5">
-            <div>
-              <dt className="sr-only">Perfil sensorial</dt>
-              <dd className="text-sm text-muted-foreground line-clamp-2">
-                {coffee.sensoryProfile}
-              </dd>
+          <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center gap-1">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span>{coffee.region}</span>
             </div>
-            <div className="flex flex-wrap gap-2 text-sm">
-              <div className="flex-1 min-w-[120px]">
-                <dt className="text-muted-foreground">Processo</dt>
-                <dd className="font-medium truncate">{coffee.process}</dd>
-              </div>
-              <div className="flex-1 min-w-[120px]">
-                <dt className="text-muted-foreground">Variedade</dt>
-                <dd className="font-medium truncate">{coffee.variety}</dd>
-              </div>
+            <div>
+              <span className="text-muted-foreground">Produtor:</span> {coffee.producer}
+            </div>
+            <div>
+              <span className="text-muted-foreground">Variedade:</span> {coffee.variety}
+            </div>
+            <div>
+              <span className="text-muted-foreground">Processo:</span> {coffee.process}
             </div>
           </div>
         </div>
       </div>
-      <div className="p-4 md:p-6 pt-0 mt-2">
-        <Link href={`/coffees/${coffee.id}`} className="w-full">
-          <Button variant="outline" className="w-full">
-            Ver detalhes
-          </Button>
-        </Link>
-      </div>
-    </div>
+    </Link>
   )
 }
 

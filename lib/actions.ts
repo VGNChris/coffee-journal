@@ -129,32 +129,54 @@ export async function createBrew(data: {
   try {
     console.log("Criando preparo com dados:", data)
 
-    // Verificar se todos os campos obrigatórios estão presentes
-    if (
-      !data.coffeeId ||
-      !data.brewingMethod ||
-      !data.waterTemperature ||
-      !data.grinderSetting ||
-      !data.extractionTime ||
-      !data.acidity ||
-      !data.sweetness ||
-      !data.body ||
-      !data.brewDate ||
-      !data.brewTime
-    ) {
-      console.error("Campos obrigatórios faltando:", {
-        coffeeId: data.coffeeId,
-        brewingMethod: data.brewingMethod,
-        waterTemperature: data.waterTemperature,
-        grinderSetting: data.grinderSetting,
-        extractionTime: data.extractionTime,
-        acidity: data.acidity,
-        sweetness: data.sweetness,
-        body: data.body,
-        brewDate: data.brewDate,
-        brewTime: data.brewTime
-      })
-      throw new Error("Todos os campos obrigatórios são necessários")
+    // Validação dos campos obrigatórios
+    const requiredFields = [
+      { name: "coffeeId", value: data.coffeeId },
+      { name: "brewingMethod", value: data.brewingMethod },
+      { name: "waterTemperature", value: data.waterTemperature },
+      { name: "grinderSetting", value: data.grinderSetting },
+      { name: "extractionTime", value: data.extractionTime },
+      { name: "acidity", value: data.acidity },
+      { name: "sweetness", value: data.sweetness },
+      { name: "body", value: data.body },
+      { name: "brewDate", value: data.brewDate },
+      { name: "brewTime", value: data.brewTime }
+    ]
+
+    const missingFields = requiredFields.filter(field => !field.value && field.value !== 0)
+    
+    if (missingFields.length > 0) {
+      console.error("Campos obrigatórios faltando:", missingFields)
+      throw new Error(`Campos obrigatórios faltando: ${missingFields.map(f => f.name).join(", ")}`)
+    }
+
+    // Validação dos valores numéricos
+    if (data.waterTemperature < 70 || data.waterTemperature > 100) {
+      throw new Error("Temperatura da água deve estar entre 70°C e 100°C")
+    }
+
+    if (data.grinderSetting < 1 || data.grinderSetting > 40) {
+      throw new Error("Click do moedor deve estar entre 1 e 40")
+    }
+
+    if (data.extractionTime < 10 || data.extractionTime > 600) {
+      throw new Error("Tempo de extração deve estar entre 10 e 600 segundos")
+    }
+
+    if (data.acidity < 0 || data.acidity > 10) {
+      throw new Error("Acidez deve estar entre 0 e 10")
+    }
+
+    if (data.sweetness < 0 || data.sweetness > 10) {
+      throw new Error("Doçura deve estar entre 0 e 10")
+    }
+
+    if (data.body < 0 || data.body > 10) {
+      throw new Error("Corpo deve estar entre 0 e 10")
+    }
+
+    if (data.rating < 0 || data.rating > 5) {
+      throw new Error("Classificação deve estar entre 0 e 5")
     }
 
     const result = await sql`

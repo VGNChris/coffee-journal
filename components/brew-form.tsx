@@ -85,11 +85,12 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
 
   const onSubmit = async (values: z.infer<typeof brewSchema>) => {
     try {
+      setIsSubmitting(true)
       console.log("Enviando dados do formulário:", values)
       
-      const result = await createBrew({
-        ...values,
+      const brewData = {
         coffeeId: Number(coffeeId),
+        brewingMethod: values.brewingMethod,
         waterTemperature: Number(values.waterTemperature),
         grinderSetting: Number(values.grinderSetting),
         extractionTime: Number(values.extractionTime),
@@ -100,8 +101,11 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
         brewDate: values.brewDate,
         brewTime: values.brewTime,
         notes: values.notes || undefined
-      })
+      }
 
+      console.log("Dados formatados para envio:", brewData)
+      
+      const result = await createBrew(brewData)
       console.log("Resultado da criação:", result)
       
       if (result.success) {
@@ -117,6 +121,8 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
     } catch (error) {
       console.error("Erro ao salvar preparo:", error)
       toast.error(error instanceof Error ? error.message : "Erro ao salvar preparo")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -234,7 +240,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   <span className="text-muted-foreground">{acidity}</span>
                 </div>
                 <Slider
-                  value={[acidity]}
+                  defaultValue={[acidity]}
                   min={0}
                   max={10}
                   step={1}
@@ -251,7 +257,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   <span className="text-muted-foreground">{sweetness}</span>
                 </div>
                 <Slider
-                  value={[sweetness]}
+                  defaultValue={[sweetness]}
                   min={0}
                   max={10}
                   step={1}
@@ -270,7 +276,7 @@ export function BrewForm({ brew, coffees, selectedCoffeeId, onSuccess }: BrewFor
                   <span className="text-muted-foreground">{body}</span>
                 </div>
                 <Slider
-                  value={[body]}
+                  defaultValue={[body]}
                   min={0}
                   max={10}
                   step={1}

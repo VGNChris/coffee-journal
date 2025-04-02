@@ -16,6 +16,9 @@ export interface Brew {
   id: number
   coffeeId: number
   brewingMethod: string
+  dose: number
+  waterAmount: number
+  ratio: string
   waterTemperature: number
   grinderSetting: number
   extractionTime: number

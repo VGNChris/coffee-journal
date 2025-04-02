@@ -108,7 +108,7 @@ export default async function CoffeePage({ params }: { params: { id: string } })
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium">{brew.brewingMethod}</h3>
                       <span className="text-sm text-muted-foreground">
-                        {formatDate(brew.createdAt)}
+                        {formatDate(brew.brewDate)}
                       </span>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-sm">

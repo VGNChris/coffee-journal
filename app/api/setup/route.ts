@@ -13,7 +13,19 @@ export async function GET() {
       )
     }
 
-    // Create coffees table
+    // Verificar se a tabela brews existe e sua estrutura
+    const tableInfo = await sql`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'brews';
+    `
+
+    console.log("Estrutura atual da tabela brews:", tableInfo)
+
+    // Drop brews table if exists
+    await sql`DROP TABLE IF EXISTS brews CASCADE`
+
+    // Create coffees table if not exists
     await sql`
       CREATE TABLE IF NOT EXISTS coffees (
         id SERIAL PRIMARY KEY,
@@ -32,10 +44,13 @@ export async function GET() {
 
     // Create brews table
     await sql`
-      CREATE TABLE IF NOT EXISTS brews (
+      CREATE TABLE brews (
         id SERIAL PRIMARY KEY,
         coffee_id INTEGER NOT NULL REFERENCES coffees(id),
         brewing_method TEXT NOT NULL,
+        dose DECIMAL(5,2) NOT NULL,
+        water_amount INTEGER NOT NULL,
+        ratio TEXT NOT NULL,
         water_temperature INTEGER NOT NULL,
         grinder_setting INTEGER NOT NULL,
         extraction_time INTEGER NOT NULL,
@@ -51,9 +66,20 @@ export async function GET() {
       )
     `
 
+    // Verificar a estrutura da tabela após a criação
+    const newTableInfo = await sql`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'brews';
+    `
+
+    console.log("Nova estrutura da tabela brews:", newTableInfo)
+
     return NextResponse.json({
       success: true,
       message: "Database setup completed successfully",
+      oldStructure: tableInfo,
+      newStructure: newTableInfo
     })
   } catch (error) {
     console.error("Database setup error:", error)

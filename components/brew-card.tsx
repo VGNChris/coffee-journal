@@ -15,9 +15,9 @@ export function BrewCard({ brew }: BrewCardProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="line-clamp-1">{brew.coffee.name}</CardTitle>
+            <CardTitle className="line-clamp-1">{brew.coffee?.name}</CardTitle>
             <div className="text-sm text-muted-foreground mt-1">
-              {brew.brewingMethod} • {formatDate(brew.createdAt)}
+              {brew.brewingMethod} • {formatDate(brew.brewDate)} às {brew.brewTime}
             </div>
           </div>
           <div className="flex space-x-1">
@@ -37,35 +37,38 @@ export function BrewCard({ brew }: BrewCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <span className="text-sm font-medium">Temperatura da água (ºc):</span>
-            <span className="text-sm text-muted-foreground ml-1">{brew.waterTemperature}°C</span>
+            <div className="text-sm text-muted-foreground">Dose</div>
+            <div>{brew.dose}g</div>
           </div>
           <div>
-            <span className="text-sm font-medium">Click do moedor:</span>
-            <span className="text-sm text-muted-foreground ml-1">{brew.grinderSetting}</span>
+            <div className="text-sm text-muted-foreground">Água</div>
+            <div>{brew.waterAmount}ml</div>
           </div>
           <div>
-            <span className="text-sm font-medium">Tempo total de extração:</span>
-            <span className="text-sm text-muted-foreground ml-1">{brew.extractionTime}s</span>
+            <div className="text-sm text-muted-foreground">Proporção</div>
+            <div>{brew.ratio}</div>
           </div>
           <div>
-            <span className="text-sm font-medium">Processo:</span>
-            <span className="text-sm text-muted-foreground ml-1">{brew.coffee.process}</span>
+            <div className="text-sm text-muted-foreground">Temperatura</div>
+            <div>{brew.waterTemperature}°C</div>
+          </div>
+          <div>
+            <div className="text-sm text-muted-foreground">Moagem</div>
+            <div>Click {brew.grinderSetting}</div>
+          </div>
+          <div>
+            <div className="text-sm text-muted-foreground">Extração</div>
+            <div>{brew.extractionTime}s</div>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Link href={`/brews/${brew.id}`}>
-          <Button variant="outline" size="sm">
-            Ver detalhes
-          </Button>
-        </Link>
-        <Link href={`/coffees/${brew.coffee.id}`}>
-          <Button variant="secondary" size="sm">
+      <CardFooter>
+        <Link href={`/brews/${brew.id}`} className="w-full">
+          <Button variant="secondary" className="w-full">
             <Coffee className="mr-2 h-4 w-4" />
-            Ver café
+            Ver detalhes
           </Button>
         </Link>
       </CardFooter>

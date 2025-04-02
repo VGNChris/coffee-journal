@@ -20,8 +20,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ptbr" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
+        <meta charSet="utf-8" />
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={inter.className}>

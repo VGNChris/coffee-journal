@@ -86,37 +86,45 @@ export async function getCoffeeById(id: number): Promise<Coffee | null> {
 
 export async function getBrews(): Promise<Brew[]> {
   try {
-    const brews = await sql`
+    const result = await sql`
       SELECT 
         b.id, 
-        b.brewing_method as "brewingMethod", 
+        b.coffee_id as "coffeeId", 
+        b.brewing_method as "brewingMethod",
+        b.dose,
+        b.water_amount as "waterAmount",
+        b.ratio,
         b.water_temperature as "waterTemperature", 
         b.grinder_setting as "grinderSetting", 
         b.extraction_time as "extractionTime", 
         b.acidity, 
         b.sweetness, 
         b.body, 
+        b.rating,
+        b.brew_date::text as "brewDate",
+        b.brew_time::text as "brewTime",
+        b.notes, 
         b.created_at as "createdAt", 
         b.updated_at as "updatedAt",
-        c.id as "coffee.id", 
-        c.name as "coffee.name", 
-        c.sensory_profile as "coffee.sensoryProfile", 
-        c.region as "coffee.region", 
-        c.producer as "coffee.producer", 
-        c.variety as "coffee.variety", 
-        c.process as "coffee.process", 
+        c.id as "coffee.id",
+        c.name as "coffee.name",
+        c.sensory_profile as "coffee.sensoryProfile",
+        c.region as "coffee.region",
+        c.producer as "coffee.producer",
+        c.variety as "coffee.variety",
+        c.process as "coffee.process",
         c.altitude as "coffee.altitude",
+        c.rating as "coffee.rating",
         c.created_at as "coffee.createdAt",
         c.updated_at as "coffee.updatedAt"
       FROM brews b
-      JOIN coffees c ON b.coffee_id = c.id
+      LEFT JOIN coffees c ON b.coffee_id = c.id
       ORDER BY b.created_at DESC
     `
 
-    // Corrigindo o tipo de retorno
-    return brews.map((brew) => ({
+    return result.map(brew => ({
       ...brew,
-      coffee: {
+      coffee: brew["coffee.id"] ? {
         id: brew["coffee.id"],
         name: brew["coffee.name"],
         sensoryProfile: brew["coffee.sensoryProfile"],
@@ -125,13 +133,14 @@ export async function getBrews(): Promise<Brew[]> {
         variety: brew["coffee.variety"],
         process: brew["coffee.process"],
         altitude: brew["coffee.altitude"],
+        rating: Number(brew["coffee.rating"]),
         createdAt: brew["coffee.createdAt"],
-        updatedAt: brew["coffee.updatedAt"],
-      },
-    })) as unknown as Brew[]
+        updatedAt: brew["coffee.updatedAt"]
+      } : null
+    })) as Brew[]
   } catch (error) {
     console.error("Database Error:", error)
-    return []
+    throw new Error("Failed to fetch brews.")
   }
 }
 
@@ -140,13 +149,21 @@ export async function getBrewById(id: number): Promise<Brew | null> {
     const brews = await sql`
       SELECT 
         b.id, 
+        b.coffee_id as "coffeeId",
         b.brewing_method as "brewingMethod", 
+        b.dose,
+        b.water_amount as "waterAmount",
+        b.ratio,
         b.water_temperature as "waterTemperature", 
         b.grinder_setting as "grinderSetting", 
         b.extraction_time as "extractionTime", 
         b.acidity, 
         b.sweetness, 
-        b.body, 
+        b.body,
+        b.rating,
+        b.brew_date as "brewDate",
+        b.brew_time as "brewTime",
+        b.notes,
         b.created_at as "createdAt", 
         b.updated_at as "updatedAt",
         c.id as "coffee.id", 
@@ -157,6 +174,7 @@ export async function getBrewById(id: number): Promise<Brew | null> {
         c.variety as "coffee.variety", 
         c.process as "coffee.process", 
         c.altitude as "coffee.altitude",
+        c.rating as "coffee.rating",
         c.created_at as "coffee.createdAt",
         c.updated_at as "coffee.updatedAt"
       FROM brews b
@@ -181,6 +199,7 @@ export async function getBrewById(id: number): Promise<Brew | null> {
         variety: brew["coffee.variety"],
         process: brew["coffee.process"],
         altitude: brew["coffee.altitude"],
+        rating: Number(brew["coffee.rating"]),
         createdAt: brew["coffee.createdAt"],
         updatedAt: brew["coffee.updatedAt"],
       },
@@ -197,13 +216,21 @@ export async function getBrewsByCoffeeId(coffeeId: number): Promise<Brew[]> {
     const brews = await sql`
       SELECT 
         b.id, 
+        b.coffee_id as "coffeeId",
         b.brewing_method as "brewingMethod", 
+        b.dose,
+        b.water_amount as "waterAmount",
+        b.ratio,
         b.water_temperature as "waterTemperature", 
         b.grinder_setting as "grinderSetting", 
         b.extraction_time as "extractionTime", 
         b.acidity, 
         b.sweetness, 
-        b.body, 
+        b.body,
+        b.rating,
+        b.brew_date as "brewDate",
+        b.brew_time as "brewTime",
+        b.notes,
         b.created_at as "createdAt", 
         b.updated_at as "updatedAt",
         c.id as "coffee.id", 
@@ -214,6 +241,7 @@ export async function getBrewsByCoffeeId(coffeeId: number): Promise<Brew[]> {
         c.variety as "coffee.variety", 
         c.process as "coffee.process", 
         c.altitude as "coffee.altitude",
+        c.rating as "coffee.rating",
         c.created_at as "coffee.createdAt",
         c.updated_at as "coffee.updatedAt"
       FROM brews b
@@ -235,6 +263,7 @@ export async function getBrewsByCoffeeId(coffeeId: number): Promise<Brew[]> {
         variety: brew["coffee.variety"],
         process: brew["coffee.process"],
         altitude: brew["coffee.altitude"],
+        rating: Number(brew["coffee.rating"]),
         createdAt: brew["coffee.createdAt"],
         updatedAt: brew["coffee.updatedAt"],
       },

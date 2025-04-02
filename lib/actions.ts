@@ -56,13 +56,13 @@ export async function createCoffee(data: {
         NOW(), 
         NOW()
       )
-      RETURNING id, name, sensory_profile as "sensoryProfile", region, producer, variety, process, altitude, rating, created_at as "createdAt", updated_at as "updatedAt"
+      RETURNING id, name, sensory_profile as "sensoryProfile", region, producer, variety, process, altitude, rating::numeric as rating, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     console.log("Café criado com sucesso:", result)
 
     revalidatePath("/coffees")
-    return { success: true, data: result[0] }
+    return { success: true, data: result[0] as Coffee }
   } catch (error) {
     console.error("Erro ao criar café:", error)
     throw new Error(`Falha ao criar café: ${error instanceof Error ? error.message : String(error)}`)
@@ -98,14 +98,14 @@ export async function updateCoffee(
         rating = ${data.rating},
         updated_at = NOW()
       WHERE id = ${id}
-      RETURNING id, name, sensory_profile as "sensoryProfile", region, producer, variety, process, altitude, rating, created_at as "createdAt", updated_at as "updatedAt"
+      RETURNING id, name, sensory_profile as "sensoryProfile", region, producer, variety, process, altitude, rating::numeric as rating, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     console.log("Café atualizado com sucesso:", result)
 
     revalidatePath("/coffees")
     revalidatePath(`/coffees/${id}`)
-    return { success: true, data: result[0] }
+    return { success: true, data: result[0] as Coffee }
   } catch (error) {
     console.error("Erro ao atualizar café:", error)
     throw new Error(`Falha ao atualizar café: ${error instanceof Error ? error.message : String(error)}`)
@@ -115,6 +115,9 @@ export async function updateCoffee(
 export async function createBrew(data: {
   coffeeId: number
   brewingMethod: string
+  dose: number
+  waterAmount: number
+  ratio: string
   waterTemperature: number
   grinderSetting: number
   extractionTime: number
@@ -133,6 +136,9 @@ export async function createBrew(data: {
     const requiredFields = [
       { name: "coffeeId", value: data.coffeeId },
       { name: "brewingMethod", value: data.brewingMethod },
+      { name: "dose", value: data.dose },
+      { name: "waterAmount", value: data.waterAmount },
+      { name: "ratio", value: data.ratio },
       { name: "waterTemperature", value: data.waterTemperature },
       { name: "grinderSetting", value: data.grinderSetting },
       { name: "extractionTime", value: data.extractionTime },
@@ -151,6 +157,14 @@ export async function createBrew(data: {
     }
 
     // Validação dos valores numéricos
+    if (data.dose <= 0 || data.dose > 100) {
+      throw new Error("Dose de café deve estar entre 0 e 100g")
+    }
+
+    if (data.waterAmount <= 0 || data.waterAmount > 1000) {
+      throw new Error("Quantidade de água deve estar entre 0 e 1000ml")
+    }
+
     if (data.waterTemperature < 70 || data.waterTemperature > 100) {
       throw new Error("Temperatura da água deve estar entre 70°C e 100°C")
     }
@@ -181,41 +195,49 @@ export async function createBrew(data: {
 
     const result = await sql`
       INSERT INTO brews (
-        coffee_id, 
-        brewing_method, 
-        water_temperature, 
-        grinder_setting, 
-        extraction_time, 
-        acidity, 
-        sweetness, 
+        coffee_id,
+        brewing_method,
+        dose,
+        water_amount,
+        ratio,
+        water_temperature,
+        grinder_setting,
+        extraction_time,
+        acidity,
+        sweetness,
         body,
         rating,
         brew_date,
         brew_time,
         notes,
-        created_at, 
+        created_at,
         updated_at
-      ) 
-      VALUES (
-        ${data.coffeeId}, 
-        ${data.brewingMethod}, 
-        ${data.waterTemperature}, 
-        ${data.grinderSetting}, 
-        ${data.extractionTime}, 
-        ${data.acidity}, 
-        ${data.sweetness}, 
+      ) VALUES (
+        ${data.coffeeId},
+        ${data.brewingMethod},
+        ${data.dose},
+        ${data.waterAmount},
+        ${data.ratio},
+        ${data.waterTemperature},
+        ${data.grinderSetting},
+        ${data.extractionTime},
+        ${data.acidity},
+        ${data.sweetness},
         ${data.body},
         ${data.rating},
         ${data.brewDate}::date,
         ${data.brewTime}::time,
-        ${data.notes || null},
-        NOW(), 
+        ${data.notes},
+        NOW(),
         NOW()
       )
       RETURNING 
         id, 
         coffee_id as "coffeeId", 
-        brewing_method as "brewingMethod", 
+        brewing_method as "brewingMethod",
+        dose,
+        water_amount as "waterAmount",
+        ratio,
         water_temperature as "waterTemperature", 
         grinder_setting as "grinderSetting", 
         extraction_time as "extractionTime", 
@@ -223,8 +245,8 @@ export async function createBrew(data: {
         sweetness, 
         body, 
         rating,
-        brew_date as "brewDate",
-        brew_time as "brewTime",
+        brew_date::text as "brewDate",
+        brew_time::text as "brewTime",
         notes, 
         created_at as "createdAt", 
         updated_at as "updatedAt"
@@ -236,9 +258,48 @@ export async function createBrew(data: {
       throw new Error("Falha ao criar preparo: nenhum resultado retornado")
     }
 
+    // Buscar o café associado
+    const coffeeResult = await sql`
+      SELECT 
+        id, 
+        name, 
+        sensory_profile as "sensoryProfile", 
+        region, 
+        producer, 
+        variety, 
+        process, 
+        altitude,
+        rating,
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
+      FROM coffees
+      WHERE id = ${data.coffeeId}
+    `
+
+    if (!coffeeResult || coffeeResult.length === 0) {
+      throw new Error("Café não encontrado")
+    }
+
+    const brewData = {
+      ...result[0],
+      coffee: {
+        id: coffeeResult[0].id,
+        name: coffeeResult[0].name,
+        sensoryProfile: coffeeResult[0].sensoryProfile,
+        region: coffeeResult[0].region,
+        producer: coffeeResult[0].producer,
+        variety: coffeeResult[0].variety,
+        process: coffeeResult[0].process,
+        altitude: coffeeResult[0].altitude,
+        rating: Number(coffeeResult[0].rating),
+        createdAt: coffeeResult[0].createdAt,
+        updatedAt: coffeeResult[0].updatedAt
+      }
+    } as Brew
+
     revalidatePath("/brews")
     revalidatePath(`/coffees/${data.coffeeId}`)
-    return { success: true, data: result[0] as Brew }
+    return { success: true, data: brewData }
   } catch (error) {
     console.error("Erro ao criar preparo:", error)
     if (error instanceof Error) {
@@ -254,6 +315,9 @@ export async function updateBrew(
   data: {
     coffeeId: number
     brewingMethod: string
+    dose: number
+    waterAmount: number
+    ratio: string
     waterTemperature: number
     grinderSetting: number
     extractionTime: number
@@ -272,6 +336,9 @@ export async function updateBrew(
       SET 
         coffee_id = ${data.coffeeId}, 
         brewing_method = ${data.brewingMethod}, 
+        dose = ${data.dose},
+        water_amount = ${data.waterAmount},
+        ratio = ${data.ratio},
         water_temperature = ${data.waterTemperature}, 
         grinder_setting = ${data.grinderSetting}, 
         extraction_time = ${data.extractionTime}, 
@@ -279,21 +346,81 @@ export async function updateBrew(
         sweetness = ${data.sweetness}, 
         body = ${data.body},
         rating = ${data.rating},
-        brew_date = ${data.brewDate},
-        brew_time = ${data.brewTime},
+        brew_date = ${data.brewDate}::date,
+        brew_time = ${data.brewTime}::time,
         notes = ${data.notes},
         updated_at = NOW()
       WHERE id = ${id}
-      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, brew_date as "brewDate", brew_time as "brewTime", notes, created_at as "createdAt", updated_at as "updatedAt"
+      RETURNING 
+        id, 
+        coffee_id as "coffeeId", 
+        brewing_method as "brewingMethod",
+        dose,
+        water_amount as "waterAmount",
+        ratio,
+        water_temperature as "waterTemperature", 
+        grinder_setting as "grinderSetting", 
+        extraction_time as "extractionTime", 
+        acidity, 
+        sweetness, 
+        body, 
+        rating,
+        brew_date::text as "brewDate",
+        brew_time::text as "brewTime",
+        notes, 
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
     `
 
+    if (!result || result.length === 0) {
+      throw new Error("Falha ao atualizar preparo: nenhum resultado retornado")
+    }
+
+    // Buscar o café associado
+    const coffeeResult = await sql`
+      SELECT 
+        id, 
+        name, 
+        sensory_profile as "sensoryProfile", 
+        region, 
+        producer, 
+        variety, 
+        process, 
+        altitude,
+        rating,
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
+      FROM coffees
+      WHERE id = ${data.coffeeId}
+    `
+
+    if (!coffeeResult || coffeeResult.length === 0) {
+      throw new Error("Café não encontrado")
+    }
+
+    const brewData = {
+      ...result[0],
+      coffee: {
+        id: coffeeResult[0].id,
+        name: coffeeResult[0].name,
+        sensoryProfile: coffeeResult[0].sensoryProfile,
+        region: coffeeResult[0].region,
+        producer: coffeeResult[0].producer,
+        variety: coffeeResult[0].variety,
+        process: coffeeResult[0].process,
+        altitude: coffeeResult[0].altitude,
+        rating: Number(coffeeResult[0].rating),
+        createdAt: coffeeResult[0].createdAt,
+        updatedAt: coffeeResult[0].updatedAt
+      }
+    } as Brew
+
     revalidatePath("/brews")
-    revalidatePath(`/brews/${id}`)
     revalidatePath(`/coffees/${data.coffeeId}`)
-    return { success: true, data: result[0] }
+    return { success: true, data: brewData }
   } catch (error) {
-    console.error("Database Error:", error)
-    throw new Error("Failed to update brew.")
+    console.error("Erro ao atualizar preparo:", error)
+    throw new Error(`Falha ao atualizar preparo: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 

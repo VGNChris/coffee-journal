@@ -7,13 +7,13 @@ export async function GET() {
     const tableInfo = await sql`
       SELECT column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_name = 'coffees';
+      WHERE table_name = 'brews';
     `
 
     // Consulta para verificar os dados
-    const coffeeData = await sql`
-      SELECT id, name, sensory_profile, region, producer, variety, process, altitude
-      FROM coffees
+    const brewsData = await sql`
+      SELECT *
+      FROM brews
       ORDER BY created_at DESC
       LIMIT 5;
     `
@@ -21,7 +21,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       tableStructure: tableInfo,
-      recentCoffees: coffeeData,
+      recentBrews: brewsData,
     })
   } catch (error) {
     console.error("Debug error:", error)

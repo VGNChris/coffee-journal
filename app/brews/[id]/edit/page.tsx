@@ -37,7 +37,7 @@ export default async function EditBrewPage({ params }: { params: { id: string } 
       <div className="mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold">Editar preparo</h1>
         <p className="text-sm md:text-base text-muted-foreground mt-2">
-          Editando preparo de {brew.coffeeName}
+          Editando preparo de {brew.coffee?.name}
         </p>
       </div>
 

@@ -23,7 +23,8 @@ export async function getCoffees(): Promise<Coffee[]> {
       ORDER BY created_at DESC
     `
     console.log("Cafés recuperados:", result)
-    return result
+    // Corrigindo o tipo de retorno
+    return result as unknown as Coffee[]
   } catch (error) {
     console.error("Database Error:", error)
     return []
@@ -51,7 +52,8 @@ export async function getCoffeeById(id: number): Promise<Coffee | null> {
     if (coffees.length > 0) {
       console.log("Café recuperado do banco de dados:", coffees[0])
     }
-    return coffees.length > 0 ? coffees[0] : null
+    // Corrigindo o tipo de retorno
+    return coffees.length > 0 ? coffees[0] as unknown as Coffee : null
   } catch (error) {
     console.error("Database Error:", error)
     return null
@@ -87,6 +89,7 @@ export async function getBrews(): Promise<Brew[]> {
       ORDER BY b.created_at DESC
     `
 
+    // Corrigindo o tipo de retorno
     return brews.map((brew) => ({
       ...brew,
       coffee: {
@@ -101,7 +104,7 @@ export async function getBrews(): Promise<Brew[]> {
         createdAt: brew["coffee.createdAt"],
         updatedAt: brew["coffee.updatedAt"],
       },
-    }))
+    })) as unknown as Brew[]
   } catch (error) {
     console.error("Database Error:", error)
     return []
@@ -142,6 +145,7 @@ export async function getBrewById(id: number): Promise<Brew | null> {
     }
 
     const brew = brews[0]
+    // Corrigindo o tipo de retorno
     return {
       ...brew,
       coffee: {
@@ -156,10 +160,63 @@ export async function getBrewById(id: number): Promise<Brew | null> {
         createdAt: brew["coffee.createdAt"],
         updatedAt: brew["coffee.updatedAt"],
       },
-    }
+    } as unknown as Brew
   } catch (error) {
     console.error("Database Error:", error)
     return null
   }
 }
 
+// Nova função para buscar preparos por ID do café
+export async function getBrewsByCoffeeId(coffeeId: number): Promise<Brew[]> {
+  try {
+    const brews = await sql`
+      SELECT 
+        b.id, 
+        b.brewing_method as "brewingMethod", 
+        b.water_temperature as "waterTemperature", 
+        b.grinder_setting as "grinderSetting", 
+        b.extraction_time as "extractionTime", 
+        b.acidity, 
+        b.sweetness, 
+        b.body, 
+        b.created_at as "createdAt", 
+        b.updated_at as "updatedAt",
+        c.id as "coffee.id", 
+        c.name as "coffee.name", 
+        c.sensory_profile as "coffee.sensoryProfile", 
+        c.region as "coffee.region", 
+        c.producer as "coffee.producer", 
+        c.variety as "coffee.variety", 
+        c.process as "coffee.process", 
+        c.altitude as "coffee.altitude",
+        c.created_at as "coffee.createdAt",
+        c.updated_at as "coffee.updatedAt"
+      FROM brews b
+      JOIN coffees c ON b.coffee_id = c.id
+      WHERE c.id = ${coffeeId}
+      ORDER BY b.created_at DESC
+      LIMIT 5
+    `
+
+    // Corrigindo o tipo de retorno
+    return brews.map((brew) => ({
+      ...brew,
+      coffee: {
+        id: brew["coffee.id"],
+        name: brew["coffee.name"],
+        sensoryProfile: brew["coffee.sensoryProfile"],
+        region: brew["coffee.region"],
+        producer: brew["coffee.producer"],
+        variety: brew["coffee.variety"],
+        process: brew["coffee.process"],
+        altitude: brew["coffee.altitude"],
+        createdAt: brew["coffee.createdAt"],
+        updatedAt: brew["coffee.updatedAt"],
+      },
+    })) as unknown as Brew[]
+  } catch (error) {
+    console.error("Database Error:", error)
+    return []
+  }
+}

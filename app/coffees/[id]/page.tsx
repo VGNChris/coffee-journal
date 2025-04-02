@@ -1,11 +1,14 @@
-import { getCoffeeById } from "@/lib/data"
+import { getCoffeeById, getBrewsByCoffeeId } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowLeft, Edit, CoffeeIcon as CoffeeBeaker } from "lucide-react"
+import { ArrowLeft, Edit, CoffeeIcon as CoffeeBeaker } from 'lucide-react'
 import { notFound } from "next/navigation"
+import { formatDate } from "@/lib/utils"
 
 export default async function CoffeeDetailPage({ params }: { params: { id: string } }) {
-  const coffee = await getCoffeeById(Number.parseInt(params.id))
+  const coffeeId = Number.parseInt(params.id);
+  const coffee = await getCoffeeById(coffeeId);
+  const recentBrews = await getBrewsByCoffeeId(coffeeId);
 
   if (!coffee) {
     notFound()
@@ -14,6 +17,7 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
   // Log para depuração
   console.log("Exibindo café:", coffee)
   console.log("Perfil sensorial:", coffee.sensoryProfile)
+  console.log("Preparos recentes:", recentBrews)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -47,7 +51,7 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
           <dl className="space-y-4">
             <div>
               <dt className="text-sm font-medium text-muted-foreground">Perfil sensorial</dt>
-              <dd className="mt-1">{coffee.sensoryProfile || "Not specified"}</dd>
+              <dd className="mt-1">{coffee.sensoryProfile || "Não especificado"}</dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-muted-foreground">Região</dt>
@@ -74,18 +78,75 @@ export default async function CoffeeDetailPage({ params }: { params: { id: strin
 
         <div className="bg-card border rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Preparos recentes</h2>
-          {/* This would be populated with actual brew data */}
-          <p className="text-muted-foreground">Sem preparos recentes para esse café.</p>
-          <div className="mt-4">
-            <Link href={`/brews/new?coffeeId=${coffee.id}`}>
-              <Button>
-                <CoffeeBeaker className="mr-2 h-4 w-4" /> Adicionar preparo
-              </Button>
-            </Link>
-          </div>
+          
+          {recentBrews.length === 0 ? (
+            <>
+              <p className="text-muted-foreground mb-4">Sem preparos recentes para esse café.</p>
+              <div className="mt-4">
+                <Link href={`/brews/new?coffeeId=${coffee.id}`}>
+                  <Button>
+                    <CoffeeBeaker className="mr-2 h-4 w-4" /> Adicionar preparo
+                  </Button>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-4">
+              {recentBrews.map((brew) => (
+                <div key={brew.id} className="border rounded-md p-4 hover:bg-accent/50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-medium">{brew.brewingMethod}</h3>
+                      <p className="text-sm text-muted-foreground">{formatDate(brew.createdAt)}</p>
+                    </div>
+                    <div className="flex space-x-1">
+                      <div className="text-center px-2">
+                        <div className="text-sm font-bold">{brew.acidity}</div>
+                        <div className="text-xs text-muted-foreground">Acidez</div>
+                      </div>
+                      <div className="text-center px-2">
+                        <div className="text-sm font-bold">{brew.sweetness}</div>
+                        <div className="text-xs text-muted-foreground">Doçura</div>
+                      </div>
+                      <div className="text-center px-2">
+                        <div className="text-sm font-bold">{brew.body}</div>
+                        <div className="text-xs text-muted-foreground">Corpo</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <div>
+                      <span className="font-medium">Água:</span>
+                      <span className="text-muted-foreground ml-1">{brew.waterTemperature}°C</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Moagem:</span>
+                      <span className="text-muted-foreground ml-1">{brew.grinderSetting}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Tempo:</span>
+                      <span className="text-muted-foreground ml-1">{brew.extractionTime}s</span>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <Link href={`/brews/${brew.id}`}>
+                      <Button variant="outline" size="sm" className="w-full">Ver detalhes</Button>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="mt-4">
+                <Link href={`/brews/new?coffeeId=${coffee.id}`}>
+                  <Button className="w-full">
+                    <CoffeeBeaker className="mr-2 h-4 w-4" /> Adicionar outro preparo
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   )
 }
-

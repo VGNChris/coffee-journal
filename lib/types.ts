@@ -7,13 +7,14 @@ export interface Coffee {
   variety: string
   process: string
   altitude: string
+  rating: number
   createdAt: string
   updatedAt: string
 }
 
 export interface Brew {
   id: number
-  coffee: Coffee
+  coffeeId: number
   brewingMethod: string
   waterTemperature: number
   grinderSetting: number
@@ -21,6 +22,8 @@ export interface Brew {
   acidity: number
   sweetness: number
   body: number
+  rating: number
+  notes?: string
   createdAt: string
   updatedAt: string
 }

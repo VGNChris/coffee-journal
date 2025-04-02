@@ -2,6 +2,7 @@
 
 import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import { Coffee, Brew } from "@/lib/types"
 
 export async function createCoffee(data: {
   name: string
@@ -11,7 +12,8 @@ export async function createCoffee(data: {
   variety: string
   process: string
   altitude: string
-}) {
+  rating: number
+}): Promise<{ success: boolean; data: Coffee }> {
   try {
     console.log("Criando café com dados:", data)
     console.log("Perfil sensorial:", data.sensoryProfile)
@@ -37,7 +39,8 @@ export async function createCoffee(data: {
         producer, 
         variety, 
         process, 
-        altitude, 
+        altitude,
+        rating,
         created_at, 
         updated_at
       ) 
@@ -48,11 +51,12 @@ export async function createCoffee(data: {
         ${data.producer}, 
         ${data.variety}, 
         ${data.process}, 
-        ${data.altitude}, 
+        ${data.altitude},
+        ${data.rating},
         NOW(), 
         NOW()
       )
-      RETURNING id, name, sensory_profile as "sensoryProfile"
+      RETURNING id, name, sensory_profile as "sensoryProfile", region, producer, variety, process, altitude, rating, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     console.log("Café criado com sucesso:", result)
@@ -75,8 +79,9 @@ export async function updateCoffee(
     variety: string
     process: string
     altitude: string
+    rating: number
   },
-) {
+): Promise<{ success: boolean; data: Coffee }> {
   try {
     console.log("Atualizando café com ID:", id, "Dados:", data)
 
@@ -89,10 +94,11 @@ export async function updateCoffee(
         producer = ${data.producer}, 
         variety = ${data.variety}, 
         process = ${data.process}, 
-        altitude = ${data.altitude}, 
+        altitude = ${data.altitude},
+        rating = ${data.rating},
         updated_at = NOW()
       WHERE id = ${id}
-      RETURNING id, name, sensory_profile as "sensoryProfile"
+      RETURNING id, name, sensory_profile as "sensoryProfile", region, producer, variety, process, altitude, rating, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     console.log("Café atualizado com sucesso:", result)
@@ -115,9 +121,11 @@ export async function createBrew(data: {
   acidity: number
   sweetness: number
   body: number
-}) {
+  rating: number
+  notes?: string
+}): Promise<{ success: boolean; data: Brew }> {
   try {
-    await sql`
+    const result = await sql`
       INSERT INTO brews (
         coffee_id, 
         brewing_method, 
@@ -126,7 +134,9 @@ export async function createBrew(data: {
         extraction_time, 
         acidity, 
         sweetness, 
-        body, 
+        body,
+        rating,
+        notes,
         created_at, 
         updated_at
       ) 
@@ -138,14 +148,18 @@ export async function createBrew(data: {
         ${data.extractionTime}, 
         ${data.acidity}, 
         ${data.sweetness}, 
-        ${data.body}, 
+        ${data.body},
+        ${data.rating},
+        ${data.notes},
         NOW(), 
         NOW()
       )
+      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, notes, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     revalidatePath("/brews")
     revalidatePath(`/coffees/${data.coffeeId}`)
+    return { success: true, data: result[0] }
   } catch (error) {
     console.error("Database Error:", error)
     throw new Error("Failed to create brew.")
@@ -163,10 +177,12 @@ export async function updateBrew(
     acidity: number
     sweetness: number
     body: number
+    rating: number
+    notes?: string
   },
-) {
+): Promise<{ success: boolean; data: Brew }> {
   try {
-    await sql`
+    const result = await sql`
       UPDATE brews
       SET 
         coffee_id = ${data.coffeeId}, 
@@ -176,14 +192,18 @@ export async function updateBrew(
         extraction_time = ${data.extractionTime}, 
         acidity = ${data.acidity}, 
         sweetness = ${data.sweetness}, 
-        body = ${data.body}, 
+        body = ${data.body},
+        rating = ${data.rating},
+        notes = ${data.notes},
         updated_at = NOW()
       WHERE id = ${id}
+      RETURNING id, coffee_id as "coffeeId", brewing_method as "brewingMethod", water_temperature as "waterTemperature", grinder_setting as "grinderSetting", extraction_time as "extractionTime", acidity, sweetness, body, rating, notes, created_at as "createdAt", updated_at as "updatedAt"
     `
 
     revalidatePath("/brews")
     revalidatePath(`/brews/${id}`)
     revalidatePath(`/coffees/${data.coffeeId}`)
+    return { success: true, data: result[0] }
   } catch (error) {
     console.error("Database Error:", error)
     throw new Error("Failed to update brew.")

@@ -13,6 +13,21 @@ export async function GET() {
       )
     }
 
+    // Adicionar coluna rating se não existir
+    await sql`
+      DO $$ 
+      BEGIN 
+        IF NOT EXISTS (
+          SELECT 1 
+          FROM information_schema.columns 
+          WHERE table_name = 'coffees' 
+          AND column_name = 'rating'
+        ) THEN
+          ALTER TABLE coffees ADD COLUMN rating DECIMAL(2,1) DEFAULT 0;
+        END IF;
+      END $$;
+    `
+
     // Create coffees table
     await sql`
       CREATE TABLE IF NOT EXISTS coffees (
@@ -24,6 +39,7 @@ export async function GET() {
         variety TEXT NOT NULL,
         process TEXT NOT NULL,
         altitude TEXT NOT NULL,
+        rating DECIMAL(2,1) DEFAULT 0,
         created_at TIMESTAMP NOT NULL,
         updated_at TIMESTAMP NOT NULL
       )
@@ -41,6 +57,7 @@ export async function GET() {
         acidity INTEGER NOT NULL,
         sweetness INTEGER NOT NULL,
         body INTEGER NOT NULL,
+        rating DECIMAL(2,1) DEFAULT 0,
         created_at TIMESTAMP NOT NULL,
         updated_at TIMESTAMP NOT NULL
       )

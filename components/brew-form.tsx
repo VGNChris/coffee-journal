@@ -201,7 +201,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                     <Input
                       type="number"
                       min="0"
-                      max="100"
+                      max="99999"
                       step="0.1"
                       {...field}
                     />
@@ -476,4 +476,3 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
     </Form>
   )
 }
-

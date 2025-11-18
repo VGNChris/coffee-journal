@@ -279,7 +279,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                     <Input
                       type="number"
                       min="1"
-                      max="40"
+                      max="99999"
                       {...field}
                     />
                   </FormControl>

@@ -57,8 +57,8 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
     defaultValues: {
       coffeeId: brew?.coffeeId?.toString() || "",
       brewingMethod: brew?.brewingMethod || "",
-      dose: brew?.dose?.toString() || "15",
-      waterAmount: brew?.waterAmount?.toString() || "225",
+      dose: brew?.dose?.toString() || "20",
+      waterAmount: brew?.waterAmount?.toString() || "300",
       ratio: brew?.ratio || "1:15",
       waterTemperature: brew?.waterTemperature?.toString() || "92",
       grinderSetting: brew?.grinderSetting?.toString() || "15",

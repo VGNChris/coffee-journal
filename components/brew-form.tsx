@@ -24,16 +24,16 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 const brewSchema = z.object({
   coffeeId: z.string().min(1, "Café é obrigatório"),
   brewingMethod: z.string().min(1, "Método de preparo é obrigatório"),
-  dose: z.string().min(1, "Dose é obrigatória"),
-  waterAmount: z.string().min(1, "Quantidade de água é obrigatória"),
+  dose: z.number().min(0, "Dose é obrigatória"),
+  waterAmount: z.number().min(0, "Quantidade de água é obrigatória"),
   ratio: z.string().min(1, "Proporção é obrigatória"),
-  waterTemperature: z.string().min(1, "Temperatura é obrigatória"),
-  grinderSetting: z.string().min(1, "Configuração do moinho é obrigatória"),
-  extractionTime: z.string().min(1, "Tempo de extração é obrigatório"),
-  acidity: z.string().min(1, "Acidez é obrigatória"),
-  sweetness: z.string().min(1, "Doçura é obrigatória"),
-  body: z.string().min(1, "Corpo é obrigatório"),
-  rating: z.string().min(1, "Classificação é obrigatória"),
+  waterTemperature: z.number().min(70, "Temperatura deve ser no mínimo 70°C").max(100, "Temperatura deve ser no máximo 100°C"),
+  grinderSetting: z.number().min(1, "Configuração do moinho é obrigatória"),
+  extractionTime: z.number().min(10, "Tempo de extração é obrigatório"),
+  acidity: z.number().min(0).max(10),
+  sweetness: z.number().min(0).max(10),
+  body: z.number().min(0).max(10),
+  rating: z.number().min(0, "Classificação é obrigatória").max(5),
   brewDate: z.string().min(1, "Data do preparo é obrigatória"),
   brewTime: z.string().min(1, "Hora do preparo é obrigatória"),
   notes: z.string().optional(),
@@ -57,16 +57,16 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
     defaultValues: {
       coffeeId: brew?.coffeeId?.toString() || "",
       brewingMethod: brew?.brewingMethod || "",
-      dose: brew?.dose?.toString() || "20",
-      waterAmount: brew?.waterAmount?.toString() || "300",
+      dose: brew?.dose || 20,
+      waterAmount: brew?.waterAmount || 300,
       ratio: brew?.ratio || "1:15",
-      waterTemperature: brew?.waterTemperature?.toString() || "92",
-      grinderSetting: brew?.grinderSetting?.toString() || "15",
-      extractionTime: brew?.extractionTime?.toString() || "180",
-      acidity: brew?.acidity?.toString() || "5",
-      sweetness: brew?.sweetness?.toString() || "5",
-      body: brew?.body?.toString() || "5",
-      rating: brew?.rating?.toString() || "0",
+      waterTemperature: brew?.waterTemperature || 92,
+      grinderSetting: brew?.grinderSetting || 15,
+      extractionTime: brew?.extractionTime || 180,
+      acidity: brew?.acidity || 5,
+      sweetness: brew?.sweetness || 5,
+      body: brew?.body || 5,
+      rating: brew?.rating || 0,
       brewDate: brew?.brewDate || new Date().toISOString().split("T")[0],
       brewTime: brew?.brewTime || new Date().toTimeString().split(" ")[0].slice(0, 5),
       notes: brew?.notes || ""
@@ -79,21 +79,8 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
       console.log("Dados do formulário:", data)
 
       const formattedData = {
-        coffeeId: Number(data.coffeeId),
-        brewingMethod: data.brewingMethod,
-        dose: Number(data.dose),
-        waterAmount: Number(data.waterAmount),
-        ratio: data.ratio,
-        waterTemperature: Number(data.waterTemperature),
-        grinderSetting: Number(data.grinderSetting),
-        extractionTime: Number(data.extractionTime),
-        acidity: Number(data.acidity),
-        sweetness: Number(data.sweetness),
-        body: Number(data.body),
-        rating: Number(data.rating),
-        brewDate: data.brewDate,
-        brewTime: data.brewTime,
-        notes: data.notes || undefined
+        ...data,
+        coffeeId: Number(data.coffeeId)
       }
 
       console.log("Dados formatados:", formattedData)
@@ -223,6 +210,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       min="0"
                       max="1000"
                       {...field}
+                      onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -262,6 +250,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       min="70"
                       max="100"
                       {...field}
+                      onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -280,8 +269,8 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       type="number"
                       min="1"
                       max="99999"
-                      step="1"
                       {...field}
+                      onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -301,6 +290,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       min="10"
                       max="600"
                       {...field}
+                      onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -317,7 +307,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                 <FormItem>
                   <div className="flex justify-between mb-2">
                     <FormLabel>Acidez (0-10)</FormLabel>
-                    <span className="text-muted-foreground">{field.value}</span>
+                    <span className="text-muted-foreground">{field.value ?? 0}</span>
                   </div>
                   <FormControl>
                     <Slider
@@ -325,7 +315,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       min={0}
                       max={10}
                       step={1}
-                      onValueChange={(value) => field.onChange(value[0].toString())}
+                      onValueChange={(value) => field.onChange(value[0])}
                     />
                   </FormControl>
                   <FormMessage />
@@ -340,7 +330,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                 <FormItem>
                   <div className="flex justify-between mb-2">
                     <FormLabel>Doçura (0-10)</FormLabel>
-                    <span className="text-muted-foreground">{field.value}</span>
+                    <span className="text-muted-foreground">{field.value ?? 0}</span>
                   </div>
                   <FormControl>
                     <Slider
@@ -348,7 +338,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       min={0}
                       max={10}
                       step={1}
-                      onValueChange={(value) => field.onChange(value[0].toString())}
+                      onValueChange={(value) => field.onChange(value[0])}
                     />
                   </FormControl>
                   <FormMessage />
@@ -363,7 +353,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                 <FormItem>
                   <div className="flex justify-between mb-2">
                     <FormLabel>Corpo (0-10)</FormLabel>
-                    <span className="text-muted-foreground">{field.value}</span>
+                    <span className="text-muted-foreground">{field.value ?? 0}</span>
                   </div>
                   <FormControl>
                     <Slider
@@ -371,7 +361,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       min={0}
                       max={10}
                       step={1}
-                      onValueChange={(value) => field.onChange(value[0].toString())}
+                      onValueChange={(value) => field.onChange(value[0])}
                     />
                   </FormControl>
                   <FormMessage />
@@ -389,7 +379,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                 <FormControl>
                   <Rating
                     value={Number(field.value)}
-                    onChange={(value) => field.onChange(value.toString())}
+                    onChange={(value) => field.onChange(value)}
                   />
                 </FormControl>
                 <FormMessage />

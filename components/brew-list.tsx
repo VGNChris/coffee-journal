@@ -90,6 +90,7 @@ export function BrewList({ initialBrews, coffees }: BrewListProps) {
               </DialogDescription>
             </DialogHeader>
             <BrewForm
+              key={editingBrew ? editingBrew.id : "new"}
               brew={editingBrew}
               coffees={coffees}
               onSuccess={handleBrewSave}

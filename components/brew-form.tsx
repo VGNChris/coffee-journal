@@ -67,9 +67,9 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
       sweetness: brew ? brew.sweetness : 5,
       body: brew ? brew.body : 5,
       rating: brew ? brew.rating : 0,
-      brewDate: brew?.brewDate || new Date().toISOString().split("T")[0],
-      brewTime: brew?.brewTime || new Date().toTimeString().split(" ")[0].slice(0, 5),
-      notes: brew?.notes || ""
+      brewDate: brew ? brew.brewDate : new Date().toISOString().split("T")[0],
+      brewTime: brew ? brew.brewTime : new Date().toTimeString().split(" ")[0].slice(0, 5),
+      notes: brew ? brew.notes : ""
     }
   })
 

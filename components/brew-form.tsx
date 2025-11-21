@@ -191,6 +191,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       max="99999"
                       step="0.1"
                       {...field}
+                      onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -311,7 +312,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   </div>
                   <FormControl>
                     <Slider
-                      value={[Number(field.value)]}
+                      value={[Number(field.value ?? 0)]}
                       min={0}
                       max={10}
                       step={1}
@@ -334,7 +335,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   </div>
                   <FormControl>
                     <Slider
-                      value={[Number(field.value)]}
+                      value={[Number(field.value ?? 0)]}
                       min={0}
                       max={10}
                       step={1}
@@ -357,7 +358,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   </div>
                   <FormControl>
                     <Slider
-                      value={[Number(field.value)]}
+                      value={[Number(field.value ?? 0)]}
                       min={0}
                       max={10}
                       step={1}

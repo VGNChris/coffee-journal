@@ -280,6 +280,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       type="number"
                       min="1"
                       max="99999"
+                      step="1"
                       {...field}
                     />
                   </FormControl>

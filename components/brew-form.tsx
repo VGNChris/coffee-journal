@@ -21,15 +21,25 @@ import * as z from "zod"
 import { Loader2 } from "lucide-react"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 
+const numberPreprocess = (val: unknown) => {
+  if (typeof val === 'string') {
+    if (val === '') return null; // Permite campo vazio que será tratado pelo min()
+    const num = Number(val);
+    return isNaN(num) ? val : num;
+  }
+  return val;
+};
+
+
 const brewSchema = z.object({
   coffeeId: z.string().min(1, "Café é obrigatório"),
   brewingMethod: z.string().min(1, "Método de preparo é obrigatório"),
-  dose: z.number().min(0, "Dose é obrigatória"),
-  waterAmount: z.number().min(0, "Quantidade de água é obrigatória"),
+  dose: z.preprocess(numberPreprocess, z.number({ required_error: "Dose é obrigatória" }).min(0, "Dose deve ser positiva")),
+  waterAmount: z.preprocess(numberPreprocess, z.number({ required_error: "Quantidade de água é obrigatória" }).min(0, "Água deve ser positiva")),
   ratio: z.string().min(1, "Proporção é obrigatória"),
-  waterTemperature: z.number().min(70, "Temperatura deve ser no mínimo 70°C").max(100, "Temperatura deve ser no máximo 100°C"),
-  grinderSetting: z.number().min(1, "Configuração do moinho é obrigatória"),
-  extractionTime: z.number().min(10, "Tempo de extração é obrigatório").max(600, "O tempo máximo de extração é 600 segundos"),
+  waterTemperature: z.preprocess(numberPreprocess, z.number({ required_error: "Temperatura é obrigatória" }).min(70, "Mínimo 70°C").max(100, "Máximo 100°C")),
+  grinderSetting: z.preprocess(numberPreprocess, z.number({ required_error: "Moagem é obrigatória" }).min(1, "Moagem deve ser no mínimo 1")),
+  extractionTime: z.preprocess(numberPreprocess, z.number({ required_error: "Tempo é obrigatório" }).min(10, "Mínimo 10s").max(600, "Máximo 600s")),
   acidity: z.number().min(0).max(10),
   sweetness: z.number().min(0).max(10),
   body: z.number().min(0).max(10),
@@ -54,23 +64,27 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
 
   const form = useForm<BrewFormData>({
     resolver: zodResolver(brewSchema),
-    defaultValues: {
-      coffeeId: brew ? brew.coffeeId.toString() : "",
-      brewingMethod: brew ? brew.brewingMethod : "",
-      dose: brew ? brew.dose : 20,
-      waterAmount: brew ? brew.waterAmount : 300,
-      ratio: brew ? brew.ratio : "1:15",
-      waterTemperature: brew ? brew.waterTemperature : 92,
-      grinderSetting: brew ? brew.grinderSetting : 15,
-      extractionTime: brew ? brew.extractionTime : 180,
-      acidity: brew ? brew.acidity : 5,
-      sweetness: brew ? brew.sweetness : 5,
-      body: brew ? brew.body : 5,
-      rating: brew ? brew.rating : 0,
-      brewDate: brew?.brewDate || new Date().toISOString().split("T")[0],
-      brewTime: brew?.brewTime || new Date().toTimeString().split(" ")[0].slice(0, 5),
-      notes: brew?.notes || ""
-    }
+    defaultValues: brew
+      ? {
+          ...brew,
+          coffeeId: brew.coffeeId.toString(),
+          notes: brew.notes ?? "",
+        }
+      : {
+          dose: 20,
+          waterAmount: 300,
+          ratio: "1:15",
+          waterTemperature: 92,
+          grinderSetting: 15,
+          extractionTime: 180,
+          acidity: 5,
+          sweetness: 5,
+          body: 5,
+          rating: 0,
+          brewDate: new Date().toISOString().split("T")[0],
+          brewTime: new Date().toTimeString().split(" ")[0].slice(0, 5),
+          notes: "",
+        },
   })
 
   const onSubmit = async (data: BrewFormData) => {
@@ -186,13 +200,11 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Dose de café (g)</FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
-                      inputMode="decimal"
+                      type="number"
                       min="0"
                       max="99999"
                       step="0.1"
                       {...field}
-                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -208,12 +220,10 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Quantidade de água (ml)</FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
-                      inputMode="decimal"
+                      type="number"
                       min="0"
                       max="1000"
                       {...field}
-                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -249,12 +259,10 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Temperatura da água (°C)</FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
-                      inputMode="decimal"
+                      type="number"
                       min="70"
                       max="100"
                       {...field}
-                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -270,12 +278,10 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Click do moedor</FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
-                      inputMode="decimal"
+                      type="number"
                       min="1"
                       max="99999"
                       {...field}
-                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -291,12 +297,10 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Tempo de extração (segundos)</FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
-                      inputMode="decimal"
+                      type="number"
                       min="10"
                       max="600"
                       {...field}
-                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

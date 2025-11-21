@@ -29,7 +29,7 @@ const brewSchema = z.object({
   ratio: z.string().min(1, "Proporção é obrigatória"),
   waterTemperature: z.number().min(70, "Temperatura deve ser no mínimo 70°C").max(100, "Temperatura deve ser no máximo 100°C"),
   grinderSetting: z.number().min(1, "Configuração do moinho é obrigatória"),
-  extractionTime: z.number().min(10, "Tempo de extração é obrigatório"),
+  extractionTime: z.number().min(10, "Tempo de extração é obrigatório").max(600, "O tempo máximo de extração é 600 segundos"),
   acidity: z.number().min(0).max(10),
   sweetness: z.number().min(0).max(10),
   body: z.number().min(0).max(10),
@@ -186,12 +186,13 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Dose de café (g)</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       min="0"
                       max="99999"
                       step="0.1"
                       {...field}
-                      onChange={e => field.onChange(e.target.valueAsNumber)}
+                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -207,11 +208,12 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Quantidade de água (ml)</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       min="0"
                       max="1000"
                       {...field}
-                      onChange={e => field.onChange(e.target.valueAsNumber)}
+                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -247,11 +249,12 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Temperatura da água (°C)</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       min="70"
                       max="100"
                       {...field}
-                      onChange={e => field.onChange(e.target.valueAsNumber)}
+                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -267,11 +270,12 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Click do moedor</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       min="1"
                       max="99999"
                       {...field}
-                      onChange={e => field.onChange(e.target.valueAsNumber)}
+                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -287,11 +291,12 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                   <FormLabel>Tempo de extração (segundos)</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       min="10"
                       max="600"
                       {...field}
-                      onChange={e => field.onChange(e.target.valueAsNumber)}
+                      onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

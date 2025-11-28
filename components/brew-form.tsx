@@ -21,25 +21,15 @@ import * as z from "zod"
 import { Loader2 } from "lucide-react"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 
-const numberPreprocess = (val: unknown) => {
-  if (typeof val === 'string') {
-    if (val === '') return null; // Permite campo vazio que será tratado pelo min()
-    const num = Number(val);
-    return isNaN(num) ? val : num;
-  }
-  return val;
-};
-
-
 const brewSchema = z.object({
   coffeeId: z.string().min(1, "Café é obrigatório"),
   brewingMethod: z.string().min(1, "Método de preparo é obrigatório"),
-  dose: z.preprocess(numberPreprocess, z.number({ required_error: "Dose é obrigatória" }).min(0, "Dose deve ser positiva")),
-  waterAmount: z.preprocess(numberPreprocess, z.number({ required_error: "Quantidade de água é obrigatória" }).min(0, "Água deve ser positiva")),
+  dose: z.coerce.number({ required_error: "Dose é obrigatória" }).min(0, "Dose deve ser positiva"),
+  waterAmount: z.coerce.number({ required_error: "Quantidade de água é obrigatória" }).min(0, "Água deve ser positiva"),
   ratio: z.string().min(1, "Proporção é obrigatória"),
-  waterTemperature: z.preprocess(numberPreprocess, z.number({ required_error: "Temperatura é obrigatória" }).min(70, "Mínimo 70°C").max(100, "Máximo 100°C")),
-  grinderSetting: z.preprocess(numberPreprocess, z.number({ required_error: "Moagem é obrigatória" }).min(1, "Moagem deve ser no mínimo 1").max(250, "Moagem deve ser no máximo 250")),
-  extractionTime: z.preprocess(numberPreprocess, z.number({ required_error: "Tempo é obrigatório" }).min(10, "Mínimo 10s").max(600, "Máximo 600s")),
+  waterTemperature: z.coerce.number({ required_error: "Temperatura é obrigatória" }).min(70, "Mínimo 70°C").max(100, "Máximo 100°C"),
+  grinderSetting: z.coerce.number({ required_error: "Moagem é obrigatória" }).min(1, "Moagem deve ser no mínimo 1").max(250, "Moagem deve ser no máximo 250"),
+  extractionTime: z.coerce.number({ required_error: "Tempo é obrigatório" }).min(10, "Mínimo 10s").max(600, "Máximo 600s"),
   acidity: z.number().min(0).max(10),
   sweetness: z.number().min(0).max(10),
   body: z.number().min(0).max(10),

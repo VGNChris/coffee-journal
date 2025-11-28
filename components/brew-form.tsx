@@ -38,7 +38,7 @@ const brewSchema = z.object({
   waterAmount: z.preprocess(numberPreprocess, z.number({ required_error: "Quantidade de água é obrigatória" }).min(0, "Água deve ser positiva")),
   ratio: z.string().min(1, "Proporção é obrigatória"),
   waterTemperature: z.preprocess(numberPreprocess, z.number({ required_error: "Temperatura é obrigatória" }).min(70, "Mínimo 70°C").max(100, "Máximo 100°C")),
-  grinderSetting: z.preprocess(numberPreprocess, z.number({ required_error: "Moagem é obrigatória" }).min(1, "Moagem deve ser no mínimo 1")),
+  grinderSetting: z.preprocess(numberPreprocess, z.number({ required_error: "Moagem é obrigatória" }).min(1, "Moagem deve ser no mínimo 1").max(250, "Moagem deve ser no máximo 250")),
   extractionTime: z.preprocess(numberPreprocess, z.number({ required_error: "Tempo é obrigatório" }).min(10, "Mínimo 10s").max(600, "Máximo 600s")),
   acidity: z.number().min(0).max(10),
   sweetness: z.number().min(0).max(10),
@@ -71,11 +71,13 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
           notes: brew.notes ?? "",
         }
       : {
+          coffeeId: "",
+          brewingMethod: "",
           dose: 20,
           waterAmount: 300,
           ratio: "1:15",
           waterTemperature: 92,
-          grinderSetting: 15,
+          grinderSetting: 20,
           extractionTime: 180,
           acidity: 5,
           sweetness: 5,
@@ -280,7 +282,7 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                     <Input
                       type="number"
                       min="1"
-                      max="99999"
+                      max="250"
                       {...field}
                     />
                   </FormControl>

@@ -156,43 +156,6 @@ export async function createBrew(data: {
       throw new Error(`Campos obrigatórios faltando: ${missingFields.map(f => f.name).join(", ")}`)
     }
 
-    // Validação dos valores numéricos
-    if (data.dose <= 0 || data.dose > 100) {
-      throw new Error("Dose de café deve estar entre 0 e 100g")
-    }
-
-    if (data.waterAmount <= 0 || data.waterAmount > 1000) {
-      throw new Error("Quantidade de água deve estar entre 0 e 1000ml")
-    }
-
-    if (data.waterTemperature < 70 || data.waterTemperature > 100) {
-      throw new Error("Temperatura da água deve estar entre 70°C e 100°C")
-    }
-
-    if (data.grinderSetting < 1 || data.grinderSetting > 40) {
-      throw new Error("Click do moedor deve estar entre 1 e 40")
-    }
-
-    if (data.extractionTime < 10 || data.extractionTime > 600) {
-      throw new Error("Tempo de extração deve estar entre 10 e 600 segundos")
-    }
-
-    if (data.acidity < 0 || data.acidity > 10) {
-      throw new Error("Acidez deve estar entre 0 e 10")
-    }
-
-    if (data.sweetness < 0 || data.sweetness > 10) {
-      throw new Error("Doçura deve estar entre 0 e 10")
-    }
-
-    if (data.body < 0 || data.body > 10) {
-      throw new Error("Corpo deve estar entre 0 e 10")
-    }
-
-    if (data.rating < 0 || data.rating > 5) {
-      throw new Error("Classificação deve estar entre 0 e 5")
-    }
-
     const result = await sql`
       INSERT INTO brews (
         coffee_id,
@@ -463,4 +426,3 @@ export async function deleteBrew(id: number): Promise<{ success: boolean; redire
     throw new Error("Failed to delete brew.")
   }
 }
-

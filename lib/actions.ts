@@ -117,7 +117,6 @@ export async function createBrew(data: {
   brewingMethod: string
   dose: number
   waterAmount: number
-  ratio: string
   waterTemperature: number
   grinderSetting: number
   extractionTime: number
@@ -132,13 +131,18 @@ export async function createBrew(data: {
   try {
     console.log("Criando preparo com dados:", data)
 
+    const calculatedRatio =
+      data.dose > 0
+        ? `1:${(data.waterAmount / data.dose).toFixed(1)}`
+        : "1:0"
+
+
     // Validação dos campos obrigatórios
     const requiredFields = [
       { name: "coffeeId", value: data.coffeeId },
       { name: "brewingMethod", value: data.brewingMethod },
       { name: "dose", value: data.dose },
       { name: "waterAmount", value: data.waterAmount },
-      { name: "ratio", value: data.ratio },
       { name: "waterTemperature", value: data.waterTemperature },
       { name: "grinderSetting", value: data.grinderSetting },
       { name: "extractionTime", value: data.extractionTime },
@@ -179,8 +183,8 @@ export async function createBrew(data: {
         ${data.coffeeId},
         ${data.brewingMethod},
         ${data.dose},
-        ${data.waterAmount},
-        ${data.ratio},
+        ${data.waterAmount}, 
+        ${calculatedRatio},
         ${data.waterTemperature},
         ${data.grinderSetting},
         ${data.extractionTime},
@@ -280,7 +284,6 @@ export async function updateBrew(
     brewingMethod: string
     dose: number
     waterAmount: number
-    ratio: string
     waterTemperature: number
     grinderSetting: number
     extractionTime: number
@@ -294,14 +297,19 @@ export async function updateBrew(
   },
 ): Promise<{ success: boolean; data: Brew }> {
   try {
+    const calculatedRatio =
+      data.dose > 0
+        ? `1:${(data.waterAmount / data.dose).toFixed(1)}`
+        : "1:0"
+
     const result = await sql`
       UPDATE brews
       SET 
         coffee_id = ${data.coffeeId}, 
         brewing_method = ${data.brewingMethod}, 
         dose = ${data.dose},
-        water_amount = ${data.waterAmount},
-        ratio = ${data.ratio},
+        water_amount = ${data.waterAmount}, 
+        ratio = ${calculatedRatio},
         water_temperature = ${data.waterTemperature}, 
         grinder_setting = ${data.grinderSetting}, 
         extraction_time = ${data.extractionTime}, 

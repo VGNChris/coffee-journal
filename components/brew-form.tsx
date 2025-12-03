@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import type { Brew, Coffee } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -78,6 +77,18 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
           notes: "",
         },
   })
+
+  const dose = form.watch("dose")
+  const waterAmount = form.watch("waterAmount")
+
+  useEffect(() => {
+    if (dose > 0 && waterAmount > 0) {
+      const newRatio = (waterAmount / dose).toFixed(1)
+      form.setValue("ratio", `1:${newRatio}`)
+    } else {
+      form.setValue("ratio", "1:0")
+    }
+  }, [dose, waterAmount, form.setValue])
 
   const onSubmit = async (data: BrewFormData) => {
     try {
@@ -234,6 +245,8 @@ export function BrewForm({ brew, coffees, onSuccess }: BrewFormProps) {
                       type="text"
                       placeholder="1:15"
                       {...field}
+                      readOnly
+                      className="bg-gray-100 dark:bg-gray-800"
                     />
                   </FormControl>
                   <FormMessage />

@@ -31,7 +31,7 @@ Um diário digital para registrar e acompanhar suas experiências com café espe
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/coffee-journal.git
+git clone https://github.com/VGNCHRIS/coffee-journal.git
 cd coffee-journal
 ```
 
